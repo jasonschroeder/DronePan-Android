@@ -1,0 +1,106 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/my_content_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/dark"
+    android:keepScreenOn="true" >
+
+    <RelativeLayout
+      android:id="@+id/surfaceView_Rl_02"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:layout_marginBottom="0dp">
+      
+        <dji.sdk.widget.DjiGLSurfaceView
+          android:id="@+id/DjiSurfaceView_02"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"/>
+
+      </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal|bottom">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:id="@+id/StartPanoButton" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center_horizontal"
+            android:indeterminate="false" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70px"
+        android:background="@color/dark">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Photo: 0/20"
+            android:id="@+id/photoStatus" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/photoStatus"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="  |  "
+            android:id="@+id/divider1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/divider1"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Battery: N/A"
+            android:id="@+id/batteryStatus" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/batteryStatus"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="  |  "
+            android:id="@+id/divider2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/divider2"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Alt: 0 m"
+            android:id="@+id/altitudeStatus" />
+
+        <TextView
+            android:id="@+id/ConnectStateCameraTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textColor="@android:color/white"
+            android:text="Disconnected"
+            android:textSize="21sp" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
+
