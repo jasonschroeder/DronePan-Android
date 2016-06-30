@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- From: file:/Users/db/Downloads/DJI-Android-V2.3.0/V2.3.0/Android%20Studio/DJI_SDK_Android_GetStart/Demo/DronePan/res/values-w820dp/dimens.xml -->
-    <eat-comment/>
-    <dimen name="activity_horizontal_margin">64dp</dimen>
-</resources>
