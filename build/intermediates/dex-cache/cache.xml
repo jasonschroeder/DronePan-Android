@@ -2,67 +2,67 @@
 <items version="2" >
 
     <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\bouncycastle.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="42fdcf2d24ec8b0df6015221f6b8a097d6e18cf1">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\bouncycastle_a1a2592a6b9b8db99411e7748b919c2439647e2e.jar" />
-    </item>
-    <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="6cbc7773921fcfedbe55657578f0cbfe614778dc">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\com.android.support-support-v4-23.1.1_9bd011d3818c46e2dc89846d23177fa05aa77d28.jar" />
-    </item>
-    <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.1.1\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="5c5699834e9722f1c288fea2de82725d078ba127">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-23.1.1_2e41fcecf280d11b1e9887408388ca58ec19558e.jar" />
-    </item>
-    <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="f8ce05c126730e1477b7d842971f4fb0bd60117b">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\Android-dJISDKLIB-unspecified_fb4e230c1af6e9512abfc420281f7586b0993e44.jar" />
-    </item>
-    <item
         jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\dji-sdk.jar"
         jumboMode="false"
-        revision="23.0.2"
-        sha1="39cc11d56c3c8a033d285cf6b4035efa967fe7cb">
+        revision="22.0.1"
+        sha1="4c46bbe8f738f7b99cd030e781f06b8a7d57e50d">
         <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\dji-sdk_666b1a34d85484397d8b606f032c397a748ce478.jar" />
-    </item>
-    <item
-        jar="C:\android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.1.1\support-annotations-23.1.1.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="8d680ba5a623724d1fb0e81c36a790f023a6cede">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\support-annotations-23.1.1_351df8efa45d2e789ed857c5bc53feee224995a3.jar" />
-    </item>
-    <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.1\jars\libs\internal_impl-23.1.1.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="a4de9c81ae239414e1ed0f86441b02abaf29bca9">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\internal_impl-23.1.1_2d68d46febe524fe35f817b826e0130a0b5144e2.jar" />
-    </item>
-    <item
-        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\dji_eventbus.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="13e610dc2f301d02ab07276c93418e6c697c3e33">
-        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\dji_eventbus_f5629959489a98e300c040b0e77632c9b0f37d52.jar" />
     </item>
     <item
         jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\dji_gson.jar"
         jumboMode="false"
-        revision="23.0.2"
-        sha1="4f918c5d4d59cf0fda94284b59456894e4094ae4">
+        revision="22.0.1"
+        sha1="1224911fe7f7c69923edc92bfca56ffbedd6fdf8">
         <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\dji_gson_ce1feb4afd81f564abbbe92c11c5cef9c46b5f45.jar" />
+    </item>
+    <item
+        jar="C:\android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.1\support-annotations-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\support-annotations-22.2.1_cf98a034a305287708ed2b047917313d10669733.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\dji_eventbus.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f91b5d1f7bd9832fd76110d420c7651200ddd1f4">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\dji_eventbus_f5629959489a98e300c040b0e77632c9b0f37d52.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6a02b68953fb7bbefec0cc5388626d799512b168">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\Android-dJISDKLIB-unspecified_fb4e230c1af6e9512abfc420281f7586b0993e44.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.1\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4486e953d1f35f8ccab098b1dd67146366d5f731">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-22.2.1_6fc1482364127d8ce58d20b7276d4e568a859ef0.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.1\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f8efd0096475e0daf054267b61544e10dc776503">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\com.android.support-support-v4-22.2.1_2857dc02b2807d1768e00ae3c25220ce2427559d.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.1\jars\libs\internal_impl-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\internal_impl-22.2.1_004d7544ffa1e9aeb9c54aff2068a32f4002cd3b.jar" />
+    </item>
+    <item
+        jar="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\exploded-aar\Android\dJISDKLIB\unspecified\jars\libs\bouncycastle.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="917fa175b2566c9c0918cb220968ddadfa854be5">
+        <dex dex="H:\WORKS\jo3co\DronePan\Code\Android\Drone Pan Android\build\intermediates\pre-dexed\debug\bouncycastle_a1a2592a6b9b8db99411e7748b919c2439647e2e.jar" />
     </item>
 
 </items>

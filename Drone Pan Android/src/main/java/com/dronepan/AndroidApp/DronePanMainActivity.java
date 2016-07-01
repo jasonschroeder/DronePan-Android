@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +39,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     public Button mCaptureButton, mShootPhotoModeButton, mRecordVideoModeButton;
     public ToggleButton mRecordButton;
 
+    // ON CREATE
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +57,8 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
                     }
                     , 1);
         }*/
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // SET CONTENT VIEW
         setContentView(R.layout.activity_dronepan);
@@ -175,7 +179,8 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     }
 
     @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-
+        // SET CODEC SURFACE
+        djiController.setCodecSurface(surface, width, height);
     }
 
     @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
@@ -187,7 +192,10 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     }
 
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return true;
+        // DJI UNSET CODEC SURFACE
+        djiController.unsetCodecSurface();
+
+        return false;
     }
 
     // START UI ELEMENTS
@@ -202,9 +210,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         mShootPhotoModeButton = (Button) findViewById(R.id.btn_shoot_photo_mode);
         mRecordVideoModeButton = (Button) findViewById(R.id.btn_record_video_mode);
 
-        if (null != mVideoSurface) {
-            mVideoSurface.setSurfaceTextureListener(this);
-        }
+        mVideoSurface.setSurfaceTextureListener(this);
 
         mCaptureButton.setOnClickListener(this);
         mRecordButton.setOnClickListener(this);

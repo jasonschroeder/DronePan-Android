@@ -131,6 +131,7 @@ public class DJIController {
                 DJICamera camera = product.getCamera();
                 if (camera != null){
                     // Set the callback
+                    mainCtx.showToast("GET CAMERA : "+camera.getDisplayName());
                     camera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
                 }
             }
@@ -150,6 +151,7 @@ public class DJIController {
     // SET CODEC SURFACE TEXTURE
     public void setCodecSurface(SurfaceTexture surface, int width, int height) {
         if(mCodecManager == null) {
+            mainCtx.showToast("CREATING CODEC");
             mCodecManager = new DJICodecManager(mainCtx, surface, width, height);
         }
     }
