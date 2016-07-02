@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/black">
 
     <RelativeLayout
         android:id="@+id/main_title_rl"
@@ -29,17 +30,17 @@
             android:layout_centerInParent="true"
             android:text=""
             android:textColor="@android:color/white"
-            android:textSize="21sp" />
+            android:textSize="21sp"
+            android:autoText="false" />
     </RelativeLayout>
 
     <TextureView
         android:id="@+id/video_previewer_surface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/main_title_rl"
-        android:layout_gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/linearLayout" />
+        android:layout_gravity="center_vertical"
+        android:layout_height="405px"
+        android:layout_alignParentStart="true"
+        android:layout_centerInParent="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -93,10 +94,9 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="23dp"
         android:gravity="center"
         android:textColor="#ffffff"
-        android:layout_alignTop="@+id/video_previewer_surface"
+        android:layout_below="@+id/video_previewer_surface"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

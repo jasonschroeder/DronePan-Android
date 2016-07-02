@@ -12,6 +12,7 @@ import android.view.TextureView;
 import android.widget.Toast;
 
 import dji.sdk.Camera.DJICamera;
+import dji.sdk.Camera.DJICameraSettingsDef;
 import dji.sdk.Codec.DJICodecManager;
 import dji.sdk.Products.DJIAircraft;
 import dji.sdk.SDKManager.DJISDKManager;
@@ -50,7 +51,7 @@ public class DJIController {
                     mCodecManager.sendDataToDecoder(videoBuffer, size);
                 }
                 else {
-                    Log.e(TAG, "Codec Manager is null");
+                    Log.e(TAG, "ERROR CREATING CODEC MANAGER");
                 }
             }
         };
@@ -68,7 +69,7 @@ public class DJIController {
             mainCtx.updateTitleBar();
 
             //updateTitleBar();
-            //onProductChange();
+            mainCtx.initializeVideoCallback();
         }
     };
 
@@ -88,6 +89,7 @@ public class DJIController {
         }
 
         return getProductInstance().getCamera();
+
     }
 
     // IS AIRCRAFT CONNECTED
@@ -120,47 +122,66 @@ public class DJIController {
     }
 
     // SET VIDEO SURFACE
-    public void setVideoSurface(TextureView textureView) {
+    public void initializeVideoCallback() {
         DJIBaseProduct product = getProductInstance();
 
         if(product == null || !product.isConnected()) {
-            Log.e(TAG, "No aircraft connected");
+            Log.e(TAG, "NO AIRCRAFT CONNECTED");
         }
         else {
-            if(null != textureView) {
-                DJICamera camera = product.getCamera();
-                if (camera != null){
-                    // Set the callback
-                    mainCtx.showToast("GET CAMERA : "+camera.getDisplayName());
-                    camera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
-                }
+            DJICamera camera = product.getCamera();
+            if (camera != null){
+                // SET DJI CAMERA VIDEO DATA CALLBACK
+                camera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
             }
         }
     }
 
     // UNSET VIDEO SURFACE
-    public void unsetVideoSurface() {
+    public void removeVideoCallback() {
         DJICamera camera = getCameraInstance();
 
         if(camera != null) {
             // UNSET CAMERA VIDEO DATA CALLBACK
-            camera.setDJICameraReceivedVideoDataCallback(null);
+            getCameraInstance().setDJICameraReceivedVideoDataCallback(null);
         }
     }
 
     // SET CODEC SURFACE TEXTURE
-    public void setCodecSurface(SurfaceTexture surface, int width, int height) {
+    public void createCodecSurface(SurfaceTexture surface, int width, int height) {
         if(mCodecManager == null) {
-            mainCtx.showToast("CREATING CODEC");
             mCodecManager = new DJICodecManager(mainCtx, surface, width, height);
         }
     }
 
     //  UNSET CODEC SURFACE TEXTURE
-    public void unsetCodecSurface() {
+    public void removeCodecSurface() {
         if(mCodecManager != null) {
             mCodecManager.cleanSurface();
             mCodecManager = null;
+        }
+    }
+
+    // CAPTURE PHOTO
+    public void capturePhoto() {
+        DJICameraSettingsDef.CameraMode cameraMode = DJICameraSettingsDef.CameraMode.ShootPhoto;
+
+        final DJICamera camera = getCameraInstance();
+
+        if(camera != null) {
+            DJICameraSettingsDef.CameraShootPhotoMode photoMode = DJICameraSettingsDef.CameraShootPhotoMode.Single;
+
+            camera.startShootPhoto(photoMode, new DJIBaseComponent.DJICompletionCallback() {
+                @Override
+                public void onResult(DJIError djiError) {
+                    if(djiError == null) {
+                        mainCtx.showToast("CAPTURED PHOTO");
+                    }
+                    else {
+                        mainCtx.showToast(djiError.getDescription());
+                    }
+                }
+            });
         }
     }
 

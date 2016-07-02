@@ -1,15 +1,12 @@
 package com.dronepan.AndroidApp;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
-import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.TextureView;
@@ -20,8 +17,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
 import android.Manifest;
-
-import org.w3c.dom.Text;
 
 import dji.sdk.Products.DJIAircraft;
 import dji.sdk.base.DJIBaseProduct;
@@ -44,20 +39,6 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // REQUEST PERMISSIONS FOR SDK SANITY
-        /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AppCompatActivity.requestPermission(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.VIBRATE,
-                            Manifest.permission.INTERNET, Manifest.permission.ACCESS_WIFI_STATE,
-                            Manifest.permission.WAKE_LOCK, Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,
-                            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.SYSTEM_ALERT_WINDOW,
-                            Manifest.permission.READ_PHONE_STATE,
-                    }
-                    , 1);
-        }*/
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // SET CONTENT VIEW
@@ -68,8 +49,6 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
 
         // START DJI SDK CONTROLLER
         djiController = new DJIController(this);
-
-        showToast("DJI INITIALIZED");
 
         // RECEIVE DEVICE CONNECTION CHANGES
         IntentFilter filter = new IntentFilter();
@@ -106,23 +85,30 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
 
     // ON PRODUCT CHANGE SET VIDEO SURFACE
     protected void onProductChange() {
-        setVideoSurface();
+        initializeVideoCallback();
     }
 
-    // SET VIDEO SURFACE
-    public void setVideoSurface() {
+    // INITIALIZE VIDEO CALLBACK
+    public void initializeVideoCallback() {
+        // IF AIRCRAFT IS CONNECTED
         if (!djiController.isAircrafConnected()) {
             Log.e(TAG, "No aircraft connected");
         } else {
+            mVideoSurface.setSurfaceTextureListener(this);
+
             if (!djiController.getAircraftModel().equals(DJIBaseProduct.Model.UnknownAircraft)) {
-                djiController.setVideoSurface(mVideoSurface);
+
+                // INITIALIZE VIDEO CALLBACK ON DJI SDK
+                djiController.initializeVideoCallback();
+
             }
         }
     }
 
-    // UNSET VIDEO SURFACE
-    public void unsetVideoSurface() {
-        djiController.unsetVideoSurface();
+    // REMOVE VIDEO CALLBACK
+    public void removeVideoCallback() {
+        // REMOVE VIDEO CALLBACK ON DJI SDK
+        djiController.removeVideoCallback();
     }
 
     // SHOW TOASTER
@@ -138,8 +124,8 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     @Override public void onResume() {
         super.onResume();
 
-        // SET VIDEO SURFACE
-        setVideoSurface();
+        // INITIALIZE VIDEO CALL BACK ON RESUME
+        initializeVideoCallback();
 
         // UPDATE TITLE BAR
         updateTitleBar();
@@ -152,8 +138,9 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
 
     // ON PAUSE
     @Override public void onPause() {
-        // UNSET VIDEO SURFACE
-        unsetVideoSurface();
+
+        // REMOVE VIDEO CALLBACK ON PAUSE
+        removeVideoCallback();
 
         super.onPause();
     }
@@ -170,17 +157,24 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
 
     // ON DESTROY
     @Override public void onDestroy() {
-        // UNSET VIDEO SURFACE
-        unsetVideoSurface();
+
+        // REMOVE VIDEO CALLBACK ON DESTROY
+        removeVideoCallback();
 
         unregisterReceiver(mReceiver);
 
         super.onDestroy();
     }
 
+    //
+    //  SURFACE TEXTURE EVENTS
     @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        // SET CODEC SURFACE
-        djiController.setCodecSurface(surface, width, height);
+
+        Log.e(TAG, "SURFACE TEXTURE AVAILABLE");
+
+        // CREATE DJI CODEC MANAGER FOR SURFACE TEXTURE
+        djiController.createCodecSurface(surface, width, height);
+
     }
 
     @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
@@ -192,8 +186,9 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     }
 
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        // DJI UNSET CODEC SURFACE
-        djiController.unsetCodecSurface();
+
+        // DJI REMOVE CODEC MANAGER ON TEXTURE
+        djiController.removeCodecSurface();
 
         return false;
     }
@@ -201,8 +196,10 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     // START UI ELEMENTS
     private void initUI() {
         mConnectStatusTextView = (TextView) findViewById(R.id.ConnectStatusTextView);
-        // init mVideoSurface
+
+        // VIDEO SURFACE
         mVideoSurface = (TextureView)findViewById(R.id.video_previewer_surface);
+        mVideoSurface.setSurfaceTextureListener(this);
 
         recordingTime = (TextView) findViewById(R.id.timer);
         mCaptureButton = (Button) findViewById(R.id.btn_capture);
@@ -210,7 +207,6 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         mShootPhotoModeButton = (Button) findViewById(R.id.btn_shoot_photo_mode);
         mRecordVideoModeButton = (Button) findViewById(R.id.btn_record_video_mode);
 
-        mVideoSurface.setSurfaceTextureListener(this);
 
         mCaptureButton.setOnClickListener(this);
         mRecordButton.setOnClickListener(this);
@@ -231,6 +227,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_capture:{
+                djiController.capturePhoto();
                 break;
             }
             case R.id.btn_shoot_photo_mode:{
