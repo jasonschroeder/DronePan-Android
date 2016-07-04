@@ -14,6 +14,8 @@ import android.widget.Toast;
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.Camera.DJICameraSettingsDef;
 import dji.sdk.Codec.DJICodecManager;
+import dji.sdk.Gimbal.DJIGimbal;
+import dji.sdk.MissionManager.DJIMissionManager;
 import dji.sdk.Products.DJIAircraft;
 import dji.sdk.SDKManager.DJISDKManager;
 import dji.sdk.base.DJIBaseComponent;
@@ -21,28 +23,44 @@ import dji.sdk.base.DJIBaseProduct;
 import dji.sdk.base.DJIError;
 import dji.sdk.base.DJISDKError;
 
-/**
- * Created by gramulho on 29/06/2016.
- */
 public class DJIController {
+    private static DJIController mInstance = null;
+
     private static final String TAG = DJIController.class.getName();
     public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
 
     // PRODUCT
     private static DJIBaseProduct mProduct;
-    private Handler mHandler;
-    // MAIN ACTIVITY
-    private DronePanMainActivity mainCtx;
 
     protected DJICamera.CameraReceivedVideoDataCallback mReceivedVideoDataCallBack = null;
     protected DJICodecManager mCodecManager = null;
+    protected DJIMissionManager mMissionManager = null;
 
-    public DJIController(DronePanMainActivity ctx) {
-        // DJI SDK MANAGER
+    private Handler mHandler;
+
+    // MAIN ACTIVITY
+    //private DronePanMainActivity mainCtx;
+
+    // PROTECTED CONSTRUCTOR
+    protected DJIController() {
+
+    }
+
+    // SINGLETON
+    public static DJIController getInstance() {
+        if(mInstance == null) {
+            mInstance = new DJIController();
+        }
+        return mInstance;
+    }
+
+    public void initializeDJIController() {
+
+        // LOOPER HANDLER
         mHandler = new Handler(Looper.getMainLooper());
 
-        mainCtx = ctx;
-        DJISDKManager.getInstance().initSDKManager(mainCtx, mDJISDKMangerCallback);
+        // INIT DJI SDK MANAGER
+        DJISDKManager.getInstance().initSDKManager(ApplicationController.getInstance().getMainContext(), mDJISDKMangerCallback);
 
         // RECEIVED VIDEO DATA CALLBACK
         mReceivedVideoDataCallBack = new DJICamera.CameraReceivedVideoDataCallback() {
@@ -56,9 +74,9 @@ public class DJIController {
             }
         };
 
-        IntentFilter filter = new IntentFilter();
+        /*IntentFilter filter = new IntentFilter();
         filter.addAction(DJIController.FLAG_CONNECTION_CHANGE);
-        mainCtx.registerReceiver(mReceiver, filter);
+        mainCtx.registerReceiver(mReceiver, filter);*/
     }
 
     protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -66,10 +84,11 @@ public class DJIController {
         public void onReceive(Context context, Intent intent) {
 
             // UPDATE MAIN ACTIVITY TITLE BAR
-            mainCtx.updateTitleBar();
+            //mainCtx.updateTitleBar();
 
             //updateTitleBar();
-            mainCtx.initializeVideoCallback();
+            //mainCtx.initializeVideoCallback();
+
         }
     };
 
@@ -80,6 +99,14 @@ public class DJIController {
         }
 
         return mProduct;
+    }
+
+    public void createCallbacks() {
+        //getAircraftGimbal().setGimbalAdvancedSettingsStateUpdateCallback();
+    }
+
+    public void startPanorama() {
+
     }
 
     // GET CAMERA INSTANCE
@@ -121,6 +148,17 @@ public class DJIController {
         return "";
     }
 
+    // GET DJI GIMBLE
+    public DJIGimbal getAircraftGimbal() {
+        DJIBaseProduct product = getProductInstance();
+
+        if(product.getGimbal() != null) {
+            return product.getGimbal();
+        }
+
+        return null;
+    }
+
     // SET VIDEO SURFACE
     public void initializeVideoCallback() {
         DJIBaseProduct product = getProductInstance();
@@ -150,7 +188,8 @@ public class DJIController {
     // SET CODEC SURFACE TEXTURE
     public void createCodecSurface(SurfaceTexture surface, int width, int height) {
         if(mCodecManager == null) {
-            mCodecManager = new DJICodecManager(mainCtx, surface, width, height);
+            Context ctx = ApplicationController.getInstance().getMainContext();
+            mCodecManager = new DJICodecManager(ctx, surface, width, height);
         }
     }
 
@@ -175,14 +214,34 @@ public class DJIController {
                 @Override
                 public void onResult(DJIError djiError) {
                     if(djiError == null) {
-                        mainCtx.showToast("CAPTURED PHOTO");
+                        ApplicationController.getInstance().showLog("CAPTURED PHOTO");
                     }
                     else {
-                        mainCtx.showToast(djiError.getDescription());
+                        ApplicationController.getInstance().showLog(djiError.getDescription());
                     }
                 }
             });
         }
+    }
+
+    // SWITCH CAMERA MODE
+    public void switchCameraMode(DJICameraSettingsDef.CameraMode cameraMode){
+
+        DJICamera camera = getCameraInstance();
+        if (camera != null) {
+            camera.setCameraMode(cameraMode, new DJIBaseComponent.DJICompletionCallback() {
+                @Override
+                public void onResult(DJIError error) {
+
+                    if (error == null) {
+                        //ApplicationController.getInstance().showLog("Switch camera mode success!");
+                    } else {
+                        //ApplicationController.getInstance().showLog(error.getDescription());
+                    }
+                }
+            });
+        }
+
     }
 
     private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback = new DJISDKManager.DJISDKManagerCallback() {
@@ -199,7 +258,7 @@ public class DJIController {
                     @Override
                     public void run() {
                         Log.d("DronePan", "SUCCESS REGISTRATION SDK");
-                        mainCtx.showToast("SUCCESS REGISTRATION SDK");
+                        ApplicationController.getInstance().showLog("SUCCESS REGISTRATION SDK");
                     }
                 });
             }
@@ -209,7 +268,7 @@ public class DJIController {
                     @Override
                     public void run() {
                         Log.d("DronePan", "ERROR REGISTRATION SDK");
-                        mainCtx.showToast("ERROR REGISTERING SDK");
+                        ApplicationController.getInstance().showLog("ERROR REGISTERING SDK");
                     }
                 });
             }
@@ -238,10 +297,6 @@ public class DJIController {
         }
     };
 
-    /*protected void onProductChange() {
-        //initPreviewer();
-    }*/
-
     private DJIBaseComponent.DJIComponentListener mDJIComponentListener = new DJIBaseComponent.DJIComponentListener() {
         @Override public void onComponentConnectivityChanged(boolean isConnected) {
             notifyStatusChange();
@@ -257,7 +312,7 @@ public class DJIController {
         @Override
         public void run() {
             Intent intent = new Intent(FLAG_CONNECTION_CHANGE);
-            mainCtx.sendBroadcast(intent);
+            ApplicationController.getInstance().getMainContext().sendBroadcast(intent);
         }
     };
 }

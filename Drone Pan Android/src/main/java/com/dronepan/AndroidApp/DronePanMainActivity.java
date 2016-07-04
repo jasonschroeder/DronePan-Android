@@ -23,7 +23,8 @@ import dji.sdk.base.DJIBaseProduct;
 
 public class DronePanMainActivity extends Activity implements TextureView.SurfaceTextureListener, View.OnClickListener {
     private static final String TAG = DronePanMainActivity.class.getName();
-    private DJIController djiController = null;
+
+    private ApplicationController mApplicationController = null;
 
     public static String DRONEPAN_ANDROID_VERSION = "0.1";
 
@@ -39,6 +40,8 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // FORCE ORIENTATION TO PORTRAIT
+        // @todo: RESOLVE BUG IN LANDSCAPE
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // SET CONTENT VIEW
@@ -47,8 +50,10 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         // START UI ELEMENTS
         initUI();
 
-        // START DJI SDK CONTROLLER
-        djiController = new DJIController(this);
+        // GET APPLICATION CONTROLLER
+        mApplicationController = ApplicationController.getInstance();
+        // INITIALIZE APP WITH MAIN CONTEXT
+        mApplicationController.initializeApplication(this);
 
         // RECEIVE DEVICE CONNECTION CHANGES
         IntentFilter filter = new IntentFilter();
@@ -61,10 +66,11 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            ApplicationController.getInstance().showLog("INTENT RECIEVED PRODUCT CHANGE");
             // UPDATE TITLE BAR
-            updateTitleBar();
+            //updateTitleBar();
             // ON PRODUCT CHANGE
-            onProductChange();
+            //onProductChange();
 
         }
 
@@ -73,42 +79,18 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
 
     // UPDATE TITLE BAR
     public void updateTitleBar() {
-        if(mConnectStatusTextView == null) return;
+        /*if(mConnectStatusTextView == null) return;
 
         if(djiController.isAircrafConnected()) {
             mConnectStatusTextView.setText(djiController.getAircraftModel() + " connected!");
         }
         else {
             mConnectStatusTextView.setText("No aircraft connected!");
-        }
+        }*/
     }
 
-    // ON PRODUCT CHANGE SET VIDEO SURFACE
-    protected void onProductChange() {
-        initializeVideoCallback();
-    }
-
-    // INITIALIZE VIDEO CALLBACK
-    public void initializeVideoCallback() {
-        // IF AIRCRAFT IS CONNECTED
-        if (!djiController.isAircrafConnected()) {
-            Log.e(TAG, "No aircraft connected");
-        } else {
-            mVideoSurface.setSurfaceTextureListener(this);
-
-            if (!djiController.getAircraftModel().equals(DJIBaseProduct.Model.UnknownAircraft)) {
-
-                // INITIALIZE VIDEO CALLBACK ON DJI SDK
-                djiController.initializeVideoCallback();
-
-            }
-        }
-    }
-
-    // REMOVE VIDEO CALLBACK
-    public void removeVideoCallback() {
-        // REMOVE VIDEO CALLBACK ON DJI SDK
-        djiController.removeVideoCallback();
+    public void setTitleBar(String text) {
+        mConnectStatusTextView.setText(text);
     }
 
     // SHOW TOASTER
@@ -125,14 +107,11 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         super.onResume();
 
         // INITIALIZE VIDEO CALL BACK ON RESUME
-        initializeVideoCallback();
+        mApplicationController.initializeVideoCallback();
 
         // UPDATE TITLE BAR
-        updateTitleBar();
+        //updateTitleBar();
 
-        if(mVideoSurface == null) {
-            Log.e(TAG, "mVideoSurface is null");
-        }
 
     }
 
@@ -140,7 +119,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     @Override public void onPause() {
 
         // REMOVE VIDEO CALLBACK ON PAUSE
-        removeVideoCallback();
+        mApplicationController.removeVideoCallback();
 
         super.onPause();
     }
@@ -159,7 +138,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     @Override public void onDestroy() {
 
         // REMOVE VIDEO CALLBACK ON DESTROY
-        removeVideoCallback();
+        mApplicationController.removeVideoCallback();
 
         unregisterReceiver(mReceiver);
 
@@ -170,10 +149,8 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     //  SURFACE TEXTURE EVENTS
     @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
 
-        Log.e(TAG, "SURFACE TEXTURE AVAILABLE");
-
-        // CREATE DJI CODEC MANAGER FOR SURFACE TEXTURE
-        djiController.createCodecSurface(surface, width, height);
+        //
+        mApplicationController.createCodecManager(surface, width, height);
 
     }
 
@@ -188,7 +165,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
 
         // DJI REMOVE CODEC MANAGER ON TEXTURE
-        djiController.removeCodecSurface();
+        mApplicationController.removeCodecManager();
 
         return false;
     }
@@ -206,7 +183,6 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
         mRecordButton = (ToggleButton) findViewById(R.id.btn_record);
         mShootPhotoModeButton = (Button) findViewById(R.id.btn_shoot_photo_mode);
         mRecordVideoModeButton = (Button) findViewById(R.id.btn_record_video_mode);
-
 
         mCaptureButton.setOnClickListener(this);
         mRecordButton.setOnClickListener(this);
@@ -227,7 +203,7 @@ public class DronePanMainActivity extends Activity implements TextureView.Surfac
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_capture:{
-                djiController.capturePhoto();
+                mApplicationController.capturePhoto();
                 break;
             }
             case R.id.btn_shoot_photo_mode:{
