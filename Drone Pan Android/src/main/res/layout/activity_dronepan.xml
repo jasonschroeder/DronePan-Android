@@ -54,7 +54,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
-            android:text="Capture"
+            android:text="Start panorama"
             android:textSize="12sp"/>
 
         <ToggleButton
