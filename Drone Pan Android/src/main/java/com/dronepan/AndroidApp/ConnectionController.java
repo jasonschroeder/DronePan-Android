@@ -1,6 +1,7 @@
 package com.dronepan.AndroidApp;
 
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -52,15 +53,16 @@ public class ConnectionController {
 
     }
 
-    public void start() {
+    public void start(Context ctx) {
+        Log.d(TAG, "STARTING SDK MANAGER");
         // INIT DJI SDK MANAGER
-        DJISDKManager.getInstance().initSDKManager(PanoramaController.getInstance().getMainContext(), mDJISDKMangerCallback);
+        DJISDKManager.getInstance().initSDKManager(ctx, mDJISDKMangerCallback);
     }
 
     // DJI SDK MANAGER CALLBACK
     private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback = new DJISDKManager.DJISDKManagerCallback() {
         @Override public void onGetRegisteredResult(DJIError error) {
-
+            Log.d(TAG, "SDK Manger Registered Result  err: "+error.getDescription());
 
             if(error == DJISDKError.REGISTRATION_SUCCESS) {
                 // START CONNECTION TO PRODUCT
@@ -71,7 +73,7 @@ public class ConnectionController {
                     @Override
                     public void run() {
                         Log.d(TAG, "SUCCESS REGISTRATION SDK");
-                        PanoramaController.getInstance().showLog("SUCCESS REGISTRATION SDK");
+                        //PanoramaController.getInstance().showLog("SUCCESS REGISTRATION SDK");
                     }
                 });
             }
@@ -81,7 +83,7 @@ public class ConnectionController {
                     @Override
                     public void run() {
                         Log.d("DronePan", "ERROR REGISTRATION SDK");
-                        PanoramaController.getInstance().showLog("ERROR REGISTERING SDK");
+                        //PanoramaController.getInstance().showLog("ERROR REGISTERING SDK");
                     }
                 });
             }
@@ -95,8 +97,8 @@ public class ConnectionController {
                 mProduct.setDJIBaseProductListener(mDJIBaseProductListener);
 
                 // CALLS INTERFACE CALLBACK
-                if(interfaceCallback != null) {
-                    interfaceCallback.connectedToProduct(mProduct);
+                if(delegate != null) {
+                    delegate.connectedToProduct(mProduct);
                 }
 
             }
@@ -111,38 +113,28 @@ public class ConnectionController {
             switch (key) {
                 case Battery:
                     // CALLS INTERFACE CALLBACK
-                    if(interfaceCallback != null) {
-                        DJIBattery battery = (DJIBattery)newComponent;
-                        interfaceCallback.connectedToBattery(battery);
-                    }
+                    DJIBattery battery = (DJIBattery)newComponent;
+                    delegate.connectedToBattery(battery);
                     break;
                 case Camera:
                     // CALLS INTERFACE CALLBACK
-                    if(interfaceCallback != null) {
                         DJICamera camera = (DJICamera)newComponent;
-                        interfaceCallback.connectedToCamera(camera);
-                    }
+                        delegate.connectedToCamera(camera);
                     break;
                 case Gimbal:
                     // CALLS INTERFACE CALLBACK
-                    if(interfaceCallback != null) {
-                        DJIGimbal gimbal = (DJIGimbal)newComponent;
-                        interfaceCallback.connectedToGimbal(gimbal);
-                    }
+                    DJIGimbal gimbal = (DJIGimbal)newComponent;
+                    delegate.connectedToGimbal(gimbal);
                     break;
                 case RemoteController:
                     // CALLS INTERFACE CALLBACK
-                    if(interfaceCallback != null) {
-                        DJIRemoteController rc = (DJIRemoteController)newComponent;
-                        interfaceCallback.connectedToRemoteController(rc);
-                    }
+                    DJIRemoteController rc = (DJIRemoteController)newComponent;
+                    delegate.connectedToRemoteController(rc);
                     break;
                 case FlightController:
                     // CALLS INTERFACE CALLBACK
-                    if(interfaceCallback != null) {
-                        DJIFlightController fc = (DJIFlightController)newComponent;
-                        interfaceCallback.connectedToFlightController(fc);
-                    }
+                    DJIFlightController fc = (DJIFlightController)newComponent;
+                    delegate.connectedToFlightController(fc);
                     break;
 
             }

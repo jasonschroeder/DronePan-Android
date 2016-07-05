@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
+import android.util.Log;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
@@ -23,7 +24,7 @@ import dji.sdk.Gimbal.DJIGimbal;
 import dji.sdk.RemoteController.DJIRemoteController;
 import dji.sdk.base.DJIBaseProduct;
 
-public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface {
+public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface, CameraController.CameraControllerInterface {
     private static final String TAG = MainViewController.class.getName();
 
     private DJIBaseProduct product;
@@ -31,6 +32,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     private PreviewController previewController = null;
     private BatteryController batteryController = null;
     private PanoramaController panoramaController = null;
+    private CameraController cameraController = null;
 
     private PanoramaController mPanoramaController = null;
 
@@ -49,6 +51,12 @@ public class MainViewController extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // CONNECTION CONTROLLER
+        connectionController = new ConnectionController();
+        connectionController.delegate = this;
+        // STARTS CONNECTION CONTROLLER
+        connectionController.start(this);
+
         // FORCE ORIENTATION TO PORTRAIT
         // @todo: RESOLVE BUG IN LANDSCAPE
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -59,16 +67,10 @@ public class MainViewController extends Activity implements View.OnClickListener
         // START UI ELEMENTS
         initUI();
 
-        // CONNECTION CONTROLLER
-        connectionController = new ConnectionController();
-        connectionController.delegate = this;
-        // STARTS CONNECTION CONTROLLER
-        connectionController.start();
-
         // PREVIEW CONTROLLER
         previewController = new PreviewController();
         // START WITH VIDEO SURFACE
-        previewController.startWithSurface(mVideoSurface);
+        previewController.startWithContextSurface(this, mVideoSurface);
 
         // PANORAMA CONTROLLER
         panoramaController = new PanoramaController();
@@ -84,6 +86,9 @@ public class MainViewController extends Activity implements View.OnClickListener
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "BORADCASST RECEIVED");
+
+
             //PanoramaController.getInstance().updateVisualDebugData();
         }
 
@@ -141,8 +146,7 @@ public class MainViewController extends Activity implements View.OnClickListener
         super.onResume();
 
         // INITIALIZE VIDEO CALL BACK ON RESUME
-        //mPanoramaController.initializeVideoCallback();
-        //previewController.initializeVideoCallback();
+        previewController.initializeVideoCallback();
 
         // UPDATE TITLE BAR
         //updateTitleBar();
@@ -154,7 +158,6 @@ public class MainViewController extends Activity implements View.OnClickListener
     @Override public void onPause() {
 
         // REMOVE VIDEO CALLBACK ON PAUSE
-        //mPanoramaController.removeVideoCallback();
         previewController.removeVideoCallback();
 
         super.onPause();
@@ -174,7 +177,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     @Override public void onDestroy() {
 
         // REMOVE VIDEO CALLBACK ON DESTROY
-        //mPanoramaController.removeVideoCallback();
+        previewController.removeVideoCallback();
 
         unregisterReceiver(mReceiver);
 
@@ -187,11 +190,12 @@ public class MainViewController extends Activity implements View.OnClickListener
     // CONNECTION CONTROLLER INTERFACE
     //
     public void sdkRegistered() {
-        //DDLogInfo("Registered");
+        Log.d(TAG, "SDK REGISTERED");
+
     }
 
     public void failedToRegister(String reason) {
-        //DDLogWarn("Failed to register: "+reason);
+        Log.e(TAG, "FAILED TO REGISTER SDK : "+reason);
 
         //showLog(reason);
     }
@@ -209,7 +213,16 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void connectedToCamera(DJICamera camera) {
+        if(camera != null) {
+            cameraController = new CameraController(camera);
+            cameraController.delegate = this;
 
+            // SET PREVIEW CONTROLLER CAMERA
+            previewController.setCurrentCamera(camera);
+        }
+        else {
+            cameraController = null;
+        }
     }
 
     public void connectedToGimbal(DJIGimbal gimbal) {
