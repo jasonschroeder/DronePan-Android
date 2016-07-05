@@ -20,9 +20,10 @@ import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.FlightController.DJIFlightController;
 import dji.sdk.Gimbal.DJIGimbal;
+import dji.sdk.RemoteController.DJIRemoteController;
 import dji.sdk.base.DJIBaseProduct;
 
-public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface {
+public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface {
     private static final String TAG = MainViewController.class.getName();
 
     private DJIBaseProduct product;
@@ -42,6 +43,51 @@ public class MainViewController extends Activity implements View.OnClickListener
     public Button mCaptureButton, mShootPhotoModeButton, mRecordVideoModeButton;
     public ToggleButton mRecordButton;
 
+
+    // ON CREATE
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // FORCE ORIENTATION TO PORTRAIT
+        // @todo: RESOLVE BUG IN LANDSCAPE
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // SET CONTENT VIEW
+        setContentView(R.layout.activity_dronepan);
+
+        // START UI ELEMENTS
+        initUI();
+
+        // CONNECTION CONTROLLER
+        connectionController = new ConnectionController();
+        connectionController.delegate = this;
+        // STARTS CONNECTION CONTROLLER
+        connectionController.start();
+
+        // PREVIEW CONTROLLER
+        previewController = new PreviewController();
+        // START WITH VIDEO SURFACE
+        previewController.startWithSurface(mVideoSurface);
+
+        // PANORAMA CONTROLLER
+        panoramaController = new PanoramaController();
+        panoramaController.delegate = this;
+
+        // RECEIVE DEVICE CONNECTION CHANGES
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(DJIController.FLAG_CONNECTION_CHANGE);
+        registerReceiver(mReceiver, filter);
+    }
+
+    protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //PanoramaController.getInstance().updateVisualDebugData();
+        }
+
+    };
 
     // START UI ELEMENTS
     private void initUI() {
@@ -71,49 +117,6 @@ public class MainViewController extends Activity implements View.OnClickListener
         });
     }
 
-    // ON CREATE
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // FORCE ORIENTATION TO PORTRAIT
-        // @todo: RESOLVE BUG IN LANDSCAPE
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        // SET CONTENT VIEW
-        setContentView(R.layout.activity_dronepan);
-
-        // START UI ELEMENTS
-        initUI();
-
-        // GET APPLICATION CONTROLLER
-        //mPanoramaController = PanoramaController.getInstance();
-        // INITIALIZE APP WITH MAIN CONTEXT
-        //mPanoramaController.initializeApplication(this);
-
-        previewController = new PreviewController(this);
-        previewController.startWithSurface(mVideoSurface);
-
-        panoramaController = new PanoramaController();
-
-        // RECEIVE DEVICE CONNECTION CHANGES
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(DJIController.FLAG_CONNECTION_CHANGE);
-        registerReceiver(mReceiver, filter);
-    }
-
-    protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            //PanoramaController.getInstance().updateVisualDebugData();
-
-        }
-
-    };
-
-
     // UPDATE TITLE BAR
     public void updateTitleBar() {
 
@@ -139,7 +142,7 @@ public class MainViewController extends Activity implements View.OnClickListener
 
         // INITIALIZE VIDEO CALL BACK ON RESUME
         //mPanoramaController.initializeVideoCallback();
-        previewController.initializeVideoCallback();
+        //previewController.initializeVideoCallback();
 
         // UPDATE TITLE BAR
         //updateTitleBar();
@@ -213,6 +216,10 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     }
 
+    public void connectedToRemoteController(DJIRemoteController rc) {
+
+    }
+
     public void connectedToFlightController(DJIFlightController flightController) {
 
     }
@@ -234,6 +241,53 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void disconnectedFromFlightController() {
+
+    }
+
+    //
+    //  PANORAMA CONTROLLER INTERFACE
+    //
+    public void postUserMessage(String message) {
+
+    }
+
+    public void postUserWarning(String warning) {
+
+    }
+
+    public void panoStarting() {
+
+    }
+
+    public void panoStopping() {
+
+    }
+
+    public void gimbalAttitudeChanged(float pitch, float yaw, float roll) {
+
+    }
+
+    public void aircraftYawChanged(float yaw) {
+
+    }
+
+    public void aircraftSattelitesChanged(int count) {
+
+    }
+
+    public void aircraftDistanceChanged(float lat, float lng) {
+
+    }
+
+    public void aircraftAltitudeChanged(float altitude) {
+
+    }
+
+    public void panoCountChanged(int count, int total) {
+
+    }
+
+    public void panoAvailable(boolean available) {
 
     }
 

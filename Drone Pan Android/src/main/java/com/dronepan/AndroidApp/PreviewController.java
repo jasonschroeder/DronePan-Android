@@ -11,12 +11,11 @@ import dji.sdk.Codec.DJICodecManager;
 public class PreviewController implements TextureView.SurfaceTextureListener {
     protected TextureView mVideoSurface = null;
     private DJICodecManager mCodecManager = null;
+    private DJICamera mCurrentCamera = null;
 
     protected DJICamera.CameraReceivedVideoDataCallback mReceivedVideoDataCallBack = null;
 
-    public PreviewController(PreviewControllerInterface _callback) {
-        interfaceCallback = _callback;
-
+    public PreviewController() {
         // RECEIVED VIDEO DATA CALLBACK
         mReceivedVideoDataCallBack = new DJICamera.CameraReceivedVideoDataCallback() {
             @Override public void onResult(byte[] videoBuffer, int size) {
@@ -57,19 +56,24 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
         return false;
     }
 
+    // SET CURRENT PREVIEW CAMERA
+    public void setCurrentCamera(DJICamera camera) {
+        mCurrentCamera = camera;
+    }
+
     // SET VIDEO SURFACE
-    public void initializeVideoCallback(DJICamera camera) {
-        if (camera != null){
+    public void initializeVideoCallback() {
+        if (mCurrentCamera != null){
             // SET DJI CAMERA VIDEO DATA CALLBACK
-            camera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
+            mCurrentCamera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
         }
     }
 
     // UNSET VIDEO SURFACE
-    public void removeVideoCallback(DJICamera camera) {
-        if(camera != null) {
+    public void removeVideoCallback() {
+        if(mCurrentCamera != null) {
             // UNSET CAMERA VIDEO DATA CALLBACK
-            camera.setDJICameraReceivedVideoDataCallback(null);
+            mCurrentCamera.setDJICameraReceivedVideoDataCallback(null);
         }
     }
 

@@ -9,6 +9,7 @@ import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
 import dji.sdk.FlightController.DJIFlightController;
 import dji.sdk.Gimbal.DJIGimbal;
+import dji.sdk.RemoteController.DJIRemoteController;
 import dji.sdk.SDKManager.DJISDKManager;
 import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIBaseProduct;
@@ -36,6 +37,7 @@ public class ConnectionController {
         public void connectedToBattery(DJIBattery battery);
         public void connectedToCamera(DJICamera camera);
         public void connectedToGimbal(DJIGimbal gimbal);
+        public void connectedToRemoteController(DJIRemoteController rc);
         public void connectedToFlightController(DJIFlightController flightController);
         public void disconnectedFromBattery();
         public void disconnectedFromCamera();
@@ -44,7 +46,13 @@ public class ConnectionController {
         public void disconnectedFromFlightController();
     }
 
+    public ConnectionControllerInterface delegate = null;
+
     public void ConnectionController() {
+
+    }
+
+    public void start() {
         // INIT DJI SDK MANAGER
         DJISDKManager.getInstance().initSDKManager(PanoramaController.getInstance().getMainContext(), mDJISDKMangerCallback);
     }
@@ -85,6 +93,12 @@ public class ConnectionController {
 
             if(mProduct != null) {
                 mProduct.setDJIBaseProductListener(mDJIBaseProductListener);
+
+                // CALLS INTERFACE CALLBACK
+                if(interfaceCallback != null) {
+                    interfaceCallback.connectedToProduct(mProduct);
+                }
+
             }
         }
     };
@@ -93,21 +107,42 @@ public class ConnectionController {
     private DJIBaseProduct.DJIBaseProductListener mDJIBaseProductListener = new DJIBaseProduct.DJIBaseProductListener() {
         @Override public void onComponentChange(DJIBaseProduct.DJIComponentKey key, DJIBaseComponent oldComponent , DJIBaseComponent newComponent) {
             // SWITCH COMPONENT KEYS
+
             switch (key) {
                 case Battery:
-
+                    // CALLS INTERFACE CALLBACK
+                    if(interfaceCallback != null) {
+                        DJIBattery battery = (DJIBattery)newComponent;
+                        interfaceCallback.connectedToBattery(battery);
+                    }
                     break;
                 case Camera:
-
+                    // CALLS INTERFACE CALLBACK
+                    if(interfaceCallback != null) {
+                        DJICamera camera = (DJICamera)newComponent;
+                        interfaceCallback.connectedToCamera(camera);
+                    }
                     break;
                 case Gimbal:
-
+                    // CALLS INTERFACE CALLBACK
+                    if(interfaceCallback != null) {
+                        DJIGimbal gimbal = (DJIGimbal)newComponent;
+                        interfaceCallback.connectedToGimbal(gimbal);
+                    }
                     break;
                 case RemoteController:
-
+                    // CALLS INTERFACE CALLBACK
+                    if(interfaceCallback != null) {
+                        DJIRemoteController rc = (DJIRemoteController)newComponent;
+                        interfaceCallback.connectedToRemoteController(rc);
+                    }
                     break;
                 case FlightController:
-
+                    // CALLS INTERFACE CALLBACK
+                    if(interfaceCallback != null) {
+                        DJIFlightController fc = (DJIFlightController)newComponent;
+                        interfaceCallback.connectedToFlightController(fc);
+                    }
                     break;
 
             }

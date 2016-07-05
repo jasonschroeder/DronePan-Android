@@ -16,6 +16,23 @@ public class PanoramaController {
     // MAIN APPLICATION ACTIVITY
     private MainViewController mMainActivity = null;
 
+    interface PanoramaControllerInterface {
+        public void postUserMessage(String message);
+        public void postUserWarning(String warning);
+        public void panoStarting();
+        public void panoStopping();
+        public void gimbalAttitudeChanged(float pitch, float yaw, float roll);
+        public void aircraftYawChanged(float yaw);
+        public void aircraftSattelitesChanged(int count);
+        public void aircraftDistanceChanged(float lat, float lng);
+        public void aircraftAltitudeChanged(float altitude);
+        public void panoCountChanged(int count, int total);
+        public void panoAvailable(boolean available);
+
+    }
+
+    public PanoramaControllerInterface delegate = null;
+
     // PROTECTED CONSTRUCTOR
     protected PanoramaController() {
 

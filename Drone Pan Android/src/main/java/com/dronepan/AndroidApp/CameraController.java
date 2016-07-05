@@ -6,7 +6,13 @@ public class CameraController {
     private DJICamera camera;
 
     public CameraController(DJICamera cam) {
+
         camera = cam;
+
+    }
+
+    public void setPhotoMode() {
+
     }
 
 }
