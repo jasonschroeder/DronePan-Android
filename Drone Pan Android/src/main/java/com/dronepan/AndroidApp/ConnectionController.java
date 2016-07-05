@@ -53,7 +53,8 @@ public class ConnectionController {
 
     }
 
-    public void start(Context ctx) {
+    public void start(MainViewController ctx) {
+
         Log.d(TAG, "STARTING SDK MANAGER");
         // INIT DJI SDK MANAGER
         DJISDKManager.getInstance().initSDKManager(ctx, mDJISDKMangerCallback);

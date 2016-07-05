@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.os.Bundle;
 import android.view.TextureView;
@@ -27,6 +29,8 @@ import dji.sdk.base.DJIBaseProduct;
 public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface, CameraController.CameraControllerInterface {
     private static final String TAG = MainViewController.class.getName();
 
+    public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
+
     private DJIBaseProduct product;
     private ConnectionController connectionController = null;
     private PreviewController previewController = null;
@@ -45,17 +49,12 @@ public class MainViewController extends Activity implements View.OnClickListener
     public Button mCaptureButton, mShootPhotoModeButton, mRecordVideoModeButton;
     public ToggleButton mRecordButton;
 
+    private Handler mHandler;
 
     // ON CREATE
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // CONNECTION CONTROLLER
-        connectionController = new ConnectionController();
-        connectionController.delegate = this;
-        // STARTS CONNECTION CONTROLLER
-        connectionController.start(this);
 
         // FORCE ORIENTATION TO PORTRAIT
         // @todo: RESOLVE BUG IN LANDSCAPE
@@ -63,6 +62,15 @@ public class MainViewController extends Activity implements View.OnClickListener
 
         // SET CONTENT VIEW
         setContentView(R.layout.activity_dronepan);
+
+        // LOOPER HANDLER
+        mHandler = new Handler(Looper.getMainLooper());
+
+        // CONNECTION CONTROLLER
+        connectionController = new ConnectionController();
+        connectionController.delegate = this;
+        // STARTS CONNECTION CONTROLLER
+        connectionController.start(this);
 
         // START UI ELEMENTS
         initUI();
@@ -78,7 +86,7 @@ public class MainViewController extends Activity implements View.OnClickListener
 
         // RECEIVE DEVICE CONNECTION CHANGES
         IntentFilter filter = new IntentFilter();
-        filter.addAction(DJIController.FLAG_CONNECTION_CHANGE);
+        filter.addAction(FLAG_CONNECTION_CHANGE);
         registerReceiver(mReceiver, filter);
     }
 
@@ -87,7 +95,6 @@ public class MainViewController extends Activity implements View.OnClickListener
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "BORADCASST RECEIVED");
-
 
             //PanoramaController.getInstance().updateVisualDebugData();
         }
@@ -143,13 +150,14 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     // ON RESUME
     @Override public void onResume() {
-        super.onResume();
 
         // INITIALIZE VIDEO CALL BACK ON RESUME
         previewController.initializeVideoCallback();
 
         // UPDATE TITLE BAR
         //updateTitleBar();
+
+        super.onResume();
 
 
     }
@@ -165,20 +173,22 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     // ON STOP
     @Override public void onStop() {
+
         super.onStop();
+
     }
 
     // ON RETURN
     public void onReturn(View view) {
+
         this.finish();
+
     }
 
     // ON DESTROY
     @Override public void onDestroy() {
-
         // REMOVE VIDEO CALLBACK ON DESTROY
         previewController.removeVideoCallback();
-
         unregisterReceiver(mReceiver);
 
         super.onDestroy();
@@ -195,12 +205,15 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void failedToRegister(String reason) {
-        Log.e(TAG, "FAILED TO REGISTER SDK : "+reason);
+        Log.e(TAG, "FAILED TO REGISTER SDK : " + reason);
 
         //showLog(reason);
     }
 
     public void connectedToProduct(DJIBaseProduct product) {
+
+        showToast("CONNECTED TO PRODUCT "+product.getModel().toString());
+        setTitleBar(product.getModel().toString() + " connected!");
 
     }
 
@@ -321,5 +334,18 @@ public class MainViewController extends Activity implements View.OnClickListener
                 break;
         }
     }
+
+    private void notifyStatusChange() {
+        mHandler.removeCallbacks(updateRunnable);
+        mHandler.postDelayed(updateRunnable, 500);
+    }
+
+    private Runnable updateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            //Intent intent = new Intent(FLAG_CONNECTION_CHANGE);
+            //PanoramaController.getInstance().getMainContext().sendBroadcast(intent);
+        }
+    };
 
 }
