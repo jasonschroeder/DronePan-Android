@@ -37,6 +37,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     private BatteryController batteryController = null;
     private PanoramaController panoramaController = null;
     private CameraController cameraController = null;
+    private FlightController flightController = null;
 
     private PanoramaController mPanoramaController = null;
 
@@ -81,7 +82,7 @@ public class MainViewController extends Activity implements View.OnClickListener
         previewController.startWithContextSurface(this, mVideoSurface);
 
         // PANORAMA CONTROLLER
-        panoramaController = new PanoramaController();
+        panoramaController = new PanoramaController(this);
         panoramaController.delegate = this;
 
         // RECEIVE DEVICE CONNECTION CHANGES
@@ -91,12 +92,10 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "BORADCASST RECEIVED");
 
-            //PanoramaController.getInstance().updateVisualDebugData();
         }
 
     };
@@ -110,32 +109,14 @@ public class MainViewController extends Activity implements View.OnClickListener
 
         recordingTime = (TextView) findViewById(R.id.timer);
         mCaptureButton = (Button) findViewById(R.id.btn_capture);
-        mRecordButton = (ToggleButton) findViewById(R.id.btn_record);
-        mShootPhotoModeButton = (Button) findViewById(R.id.btn_shoot_photo_mode);
-        mRecordVideoModeButton = (Button) findViewById(R.id.btn_record_video_mode);
 
         mCaptureButton.setOnClickListener(this);
-        mRecordButton.setOnClickListener(this);
-        mShootPhotoModeButton.setOnClickListener(this);
-        mRecordVideoModeButton.setOnClickListener(this);
-
         recordingTime.setVisibility(View.INVISIBLE);
-
-        mRecordButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            }
-        });
-    }
-
-    // UPDATE TITLE BAR
-    public void updateTitleBar() {
-
     }
 
     public void setTitleBar(String text) {
         if(mConnectStatusTextView == null) return;
+
         mConnectStatusTextView.setText(text);
     }
 
@@ -150,12 +131,8 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     // ON RESUME
     @Override public void onResume() {
-
         // INITIALIZE VIDEO CALL BACK ON RESUME
         previewController.initializeVideoCallback();
-
-        // UPDATE TITLE BAR
-        //updateTitleBar();
 
         super.onResume();
 
@@ -164,7 +141,6 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     // ON PAUSE
     @Override public void onPause() {
-
         // REMOVE VIDEO CALLBACK ON PAUSE
         previewController.removeVideoCallback();
 
@@ -173,14 +149,12 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     // ON STOP
     @Override public void onStop() {
-
         super.onStop();
 
     }
 
     // ON RETURN
     public void onReturn(View view) {
-
         this.finish();
 
     }
@@ -194,7 +168,15 @@ public class MainViewController extends Activity implements View.OnClickListener
         super.onDestroy();
     }
 
+    //
+    //  START PANORAMA
+    //
+    public void startPanorama() {
 
+        // START PANORAMA
+        panoramaController.start();
+
+    }
 
     //
     // CONNECTION CONTROLLER INTERFACE
@@ -206,14 +188,10 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     public void failedToRegister(String reason) {
         Log.e(TAG, "FAILED TO REGISTER SDK : " + reason);
-
-        //showLog(reason);
     }
 
     public void connectedToProduct(DJIBaseProduct product) {
-
-        showToast("CONNECTED TO PRODUCT "+product.getModel().toString());
-        setTitleBar(product.getModel().toString() + " connected!");
+        showToast("Connected to "+product.getModel().toString());
 
     }
 
@@ -227,7 +205,9 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     public void connectedToCamera(DJICamera camera) {
         if(camera != null) {
-            cameraController = new CameraController(camera);
+            // INIT CAMERA CONTROLLER
+            cameraController = new CameraController();
+            cameraController.init(camera);
             cameraController.delegate = this;
 
             // SET PREVIEW CONTROLLER CAMERA
@@ -246,8 +226,11 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     }
 
-    public void connectedToFlightController(DJIFlightController flightController) {
-
+    public void connectedToFlightController(DJIFlightController fc) {
+        if(flightController == null) {
+            flightController = new FlightController();
+            flightController.init(fc);
+        }
     }
 
     public void disconnectedFromBattery() {
@@ -274,7 +257,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     //  PANORAMA CONTROLLER INTERFACE
     //
     public void postUserMessage(String message) {
-
+        showToast(message);
     }
 
     public void postUserWarning(String warning) {
@@ -317,19 +300,29 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     }
 
+    //
+    //  CAMERA CONTROLLER INTERFACE
+    //
+    public void cameraControllerInError(String reason) {
+
+    }
+
+    public void cameraControllerOK(boolean fromError) {
+
+    }
+
+    public void cameraControllerNewMedia(String filename) {
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_capture:{
-                mPanoramaController.startPanorama();
+                startPanorama();
                 break;
             }
-            case R.id.btn_shoot_photo_mode:{
-                break;
-            }
-            case R.id.btn_record_video_mode:{
-                break;
-            }
+
             default:
                 break;
         }

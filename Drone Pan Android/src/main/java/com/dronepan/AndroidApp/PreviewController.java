@@ -60,10 +60,9 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
     }
 
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        // REMOVE CODEC FROM SURFACE
-        if(mCurrentCamera != null) {
-            // UNSET CAMERA VIDEO DATA CALLBACK
-            mCurrentCamera.setDJICameraReceivedVideoDataCallback(null);
+        if(mCodecManager != null) {
+            mCodecManager.cleanSurface();
+            mCodecManager = null;
         }
 
         return false;
@@ -84,19 +83,9 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
 
     // UNSET VIDEO SURFACE
     public void removeVideoCallback() {
-
-    }
-
-    // SET CODEC SURFACE TEXTURE
-    private void createCodecSurface(SurfaceTexture surface, int width, int height) {
-
-    }
-
-    //  UNSET CODEC SURFACE TEXTURE
-    private void removeCodecSurface() {
-        if(mCodecManager != null) {
-            mCodecManager.cleanSurface();
-            mCodecManager = null;
+        if (mCurrentCamera != null){
+            // SET DJI CAMERA VIDEO DATA CALLBACK
+            mCurrentCamera.setDJICameraReceivedVideoDataCallback(null);
         }
     }
 }
