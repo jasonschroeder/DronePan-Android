@@ -11,6 +11,8 @@ import dji.sdk.MissionManager.DJIMissionManager;
 import dji.sdk.MissionManager.MissionStep.DJIGimbalAttitudeStep;
 import dji.sdk.MissionManager.MissionStep.DJIGoToStep;
 import dji.sdk.MissionManager.MissionStep.DJIMissionStep;
+import dji.sdk.MissionManager.MissionStep.DJIShootPhotoStep;
+import dji.sdk.MissionManager.MissionStep.DJIAircraftYawStep;
 import dji.sdk.MissionManager.MissionStep.DJITakeoffStep;
 import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIError;
@@ -169,54 +171,137 @@ public class PanoramaController {
     }
 
     protected DJICustomMission createCustomMission() {
+        // CREATE STEP LIST
         LinkedList<DJIMissionStep> steps = new LinkedList<DJIMissionStep>();
 
-        //Step 1: takeoff from the ground
-        /*steps.add(new DJITakeoffStep(new DJIBaseComponent.DJICompletionCallback() {
+        // CREATE 6 STEPS
+        createRowStep(steps);
+        createRowStep(steps);
+        createRowStep(steps);
+        createRowStep(steps);
+        createRowStep(steps);
+        createRowStep(steps);
 
-            @Override
-            public void onResult(DJIError error) {
-                //Utils.setResultToToast(mContext, "Takeoff step: " + (error == null ? "Success" : error.getDescription()));
-            }
-        }));*/
-
-        //Step 2: reset the gimbal to horizontal angle
+        // SET GIMBAL STATE
         steps.add(new DJIGimbalAttitudeStep(
-                DJIGimbal.DJIGimbalRotateAngleMode.RelativeAngle,
-                new DJIGimbal.DJIGimbalAngleRotation(true, 25f, DJIGimbal.DJIGimbalRotateDirection.CounterClockwise),
+                DJIGimbal.DJIGimbalRotateAngleMode.AbsoluteAngle,
+                new DJIGimbal.DJIGimbalAngleRotation(true, -90f, DJIGimbal.DJIGimbalRotateDirection.Clockwise),
                 null,
                 null,
                 new DJIBaseComponent.DJICompletionCallback() {
                     @Override
                     public void onResult(DJIError error) {
-                        delegate.postUserMessage("Set gimbal attitude step: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
+                        //delegate.postUserMessage("RESET GIMBAL: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
                     }
 
                 }));
 
-        //Step 3: Go 10 meters from home point
-        /*steps.add(new DJIGoToStep(mHomeLatitude, mHomeLongitude, 10, new DJIBaseComponent.DJICompletionCallback() {
-
+        // SHOOT PHOTO
+        steps.add(new DJIShootPhotoStep(new DJIBaseComponent.DJICompletionCallback() {
             @Override
             public void onResult(DJIError error) {
-                //setResultToToast(mContext, "Goto step: " + (error == null ? "Success" : error.getDescription()));
+                //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
+                delegate.postUserMessage("PANORAMA SUCESS");
             }
-        }));*/
+        }));
+
+
 
         DJICustomMission customMission = new DJICustomMission(steps);
 
         return customMission;
     }
 
-    /*public void buildAttitudeStep(float pitch, float roll, float yaw) {
-        DJIGimbalAttitudeStep attitude = DJIGimbalAttitudeStep(pitch, roll yaw);
-        attitude.pitch = pitch;
-        attitude.roll = roll;
-        attitude.yaw = yaw;
+    protected void createRowStep(LinkedList<DJIMissionStep> steps) {
+        float currentGimbalAngle = 0.0f;
 
-        // TODO - if this fails to create (returns optional nil) then the ! will cause an app crash - needs handling
-        return DJIGimbalAttitudeStep(attitude: attitude)!
-    }*/
+        // RESET GIMBAL STATE
+        steps.add(new DJIGimbalAttitudeStep(
+                DJIGimbal.DJIGimbalRotateAngleMode.AbsoluteAngle,
+                new DJIGimbal.DJIGimbalAngleRotation(true, currentGimbalAngle, DJIGimbal.DJIGimbalRotateDirection.Clockwise),
+                null,
+                null,
+                new DJIBaseComponent.DJICompletionCallback() {
+                    @Override
+                    public void onResult(DJIError error) {
+                        //delegate.postUserMessage("RESET GIMBAL: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
+                    }
+
+                }));
+
+        // SHOOT PHOTO
+        steps.add(new DJIShootPhotoStep(new DJIBaseComponent.DJICompletionCallback() {
+            @Override
+            public void onResult(DJIError error) {
+                //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
+                //delegate.postUserMessage("SHOOT PHOTO STEP");
+            }
+        }));
+
+        currentGimbalAngle -= 30.0f;
+        // -30
+
+        // SET GIMBAL STATE
+        steps.add(new DJIGimbalAttitudeStep(
+                DJIGimbal.DJIGimbalRotateAngleMode.AbsoluteAngle,
+                new DJIGimbal.DJIGimbalAngleRotation(true, currentGimbalAngle, DJIGimbal.DJIGimbalRotateDirection.Clockwise),
+                null,
+                null,
+                new DJIBaseComponent.DJICompletionCallback() {
+                    @Override
+                    public void onResult(DJIError error) {
+                        //delegate.postUserMessage("RESET GIMBAL: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
+                    }
+
+                }));
+
+        // SHOOT PHOTO
+        steps.add(new DJIShootPhotoStep(new DJIBaseComponent.DJICompletionCallback() {
+            @Override
+            public void onResult(DJIError error) {
+                //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
+                //delegate.postUserMessage("SHOOT PHOTO STEP");
+            }
+        }));
+
+        currentGimbalAngle -= 30.0f;
+        // -60
+
+        // SET GIMBAL STATE
+        steps.add(new DJIGimbalAttitudeStep(
+                DJIGimbal.DJIGimbalRotateAngleMode.AbsoluteAngle,
+                new DJIGimbal.DJIGimbalAngleRotation(true, currentGimbalAngle, DJIGimbal.DJIGimbalRotateDirection.Clockwise),
+                null,
+                null,
+                new DJIBaseComponent.DJICompletionCallback() {
+                    @Override
+                    public void onResult(DJIError error) {
+                        //delegate.postUserMessage("RESET GIMBAL: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
+                    }
+
+                }));
+
+        // SHOOT PHOTO
+        steps.add(new DJIShootPhotoStep(new DJIBaseComponent.DJICompletionCallback() {
+            @Override
+            public void onResult(DJIError error) {
+                //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
+                delegate.postUserMessage("LAST PANORAMA SHOOT PHOTO STEP");
+            }
+        }));
+
+        // END ROW
+
+        // YAW AIRCRAFT
+        steps.add(new DJIAircraftYawStep(60.0f, 10.0f, new DJIBaseComponent.DJICompletionCallback() {
+            @Override
+            public void onResult(DJIError error) {
+                //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
+                delegate.postUserMessage("AIRCRAFT YAW STEP");
+            }
+        }));
+
+    }
 
     public void buildMissionSteps() {
 
