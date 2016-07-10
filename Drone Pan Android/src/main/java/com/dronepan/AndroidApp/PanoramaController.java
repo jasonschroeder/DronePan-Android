@@ -21,17 +21,17 @@ public class PanoramaController {
     private static final String TAG = PanoramaController.class.getName();
 
     interface PanoramaControllerInterface {
-        public void postUserMessage(String message);
-        public void postUserWarning(String warning);
-        public void panoStarting();
-        public void panoStopping();
-        public void gimbalAttitudeChanged(float pitch, float yaw, float roll);
-        public void aircraftYawChanged(float yaw);
-        public void aircraftSattelitesChanged(int count);
-        public void aircraftDistanceChanged(float lat, float lng);
-        public void aircraftAltitudeChanged(float altitude);
-        public void panoCountChanged(int count, int total);
-        public void panoAvailable(boolean available);
+        void postUserMessage(String message);
+        void postUserWarning(String warning);
+        void panoStarting();
+        void panoStopping();
+        void gimbalAttitudeChanged(float pitch, float yaw, float roll);
+        void aircraftYawChanged(float yaw);
+        void aircraftSattelitesChanged(int count);
+        void aircraftDistanceChanged(float lat, float lng);
+        void aircraftAltitudeChanged(float altitude);
+        void panoCountChanged(int count, int total);
+        void panoAvailable(boolean available);
 
     }
 
@@ -201,7 +201,7 @@ public class PanoramaController {
             @Override
             public void onResult(DJIError error) {
                 //Utils.setResultToToast(mContext, "Take single photo step: " + (error == null ? "Success" : error.getDescription()));
-                delegate.postUserMessage("PANORAMA SUCESS");
+                delegate.postUserMessage("PANORAMA SUCCESS");
             }
         }));
 
