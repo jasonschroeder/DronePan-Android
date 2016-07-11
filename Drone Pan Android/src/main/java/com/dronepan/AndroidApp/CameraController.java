@@ -11,9 +11,9 @@ public class CameraController {
     private DJIPlaybackManager.DJICameraPlaybackState mState;
 
     interface CameraControllerInterface {
-        public void cameraControllerInError(String reason);
-        public void cameraControllerOK(boolean fromError);
-        public void cameraControllerNewMedia(String filename);
+        void cameraControllerInError(String reason);
+        void cameraControllerOK(boolean fromError);
+        void cameraControllerNewMedia(String filename);
     }
 
     public CameraControllerInterface delegate = null;
