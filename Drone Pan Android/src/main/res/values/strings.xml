@@ -1,3 +1,4 @@
-<resources>
-    <string name="app_name">Drone Pan Android</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="MissingTranslation">DronePan</string>
+    <string name="start_panorama" tools:ignore="MissingTranslation">Start panorama</string>
 </resources>

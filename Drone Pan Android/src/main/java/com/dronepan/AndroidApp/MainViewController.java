@@ -57,10 +57,6 @@ public class MainViewController extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // FORCE ORIENTATION TO PORTRAIT
-        // @todo: RESOLVE BUG IN LANDSCAPE
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         // SET CONTENT VIEW
         setContentView(R.layout.activity_dronepan);
 
