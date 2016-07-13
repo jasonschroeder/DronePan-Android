@@ -41,9 +41,6 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     private PanoramaController mPanoramaController = null;
 
-    public static String DRONEPAN_ANDROID_VERSION = "0.1";
-
-
     public TextView mConnectStatusTextView;
     protected TextureView mVideoSurface = null;
 
