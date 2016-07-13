@@ -27,8 +27,12 @@ import dji.sdk.base.DJIError;
 
 import dji.sdk.util.DJIParamCapability;
 import timber.log.Timber;
-public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface, CameraController.CameraControllerInterface, BatteryController.BatteryControllerInterface {
-    
+public class MainViewController extends Activity
+        implements View.OnClickListener,
+                   ConnectionController.ConnectionControllerInterface,
+                   PanoramaController.PanoramaControllerInterface,
+                   CameraController.CameraControllerInterface,
+                   BatteryController.BatteryControllerInterface {
     public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
 
     private DJIBaseProduct mProduct;

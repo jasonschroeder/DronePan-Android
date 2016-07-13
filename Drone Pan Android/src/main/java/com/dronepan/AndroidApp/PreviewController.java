@@ -49,7 +49,8 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
         }
     }
 
-    @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
     }
 

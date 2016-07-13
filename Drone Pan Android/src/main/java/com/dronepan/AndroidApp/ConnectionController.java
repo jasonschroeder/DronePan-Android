@@ -63,7 +63,8 @@ public class ConnectionController {
     }
 
     // DJI SDK MANAGER CALLBACK
-    private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback = new DJISDKManager.DJISDKManagerCallback() {
+    private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback =
+            new DJISDKManager.DJISDKManagerCallback() {
         @Override public void onGetRegisteredResult(DJIError error) {
             Timber.d("SDK Manger Registered Result  err: %s", error.getDescription());
 
@@ -92,7 +93,8 @@ public class ConnectionController {
         }
 
         // ON PRODUCT CHANGED
-        @Override public void onProductChanged(DJIBaseProduct oldProduct, DJIBaseProduct newProduct) {
+        @Override public void onProductChanged(DJIBaseProduct oldProduct,
+                                               DJIBaseProduct newProduct) {
             mProduct = newProduct;
 
             if (mProduct != null) {
@@ -107,8 +109,11 @@ public class ConnectionController {
     };
 
     // PRODUCT LISTENER
-    private DJIBaseProduct.DJIBaseProductListener mDJIBaseProductListener = new DJIBaseProduct.DJIBaseProductListener() {
-        @Override public void onComponentChange(DJIBaseProduct.DJIComponentKey key, DJIBaseComponent oldComponent , DJIBaseComponent newComponent) {
+    private DJIBaseProduct.DJIBaseProductListener mDJIBaseProductListener =
+            new DJIBaseProduct.DJIBaseProductListener() {
+        @Override public void onComponentChange(DJIBaseProduct.DJIComponentKey key,
+                                                DJIBaseComponent oldComponent,
+                                                DJIBaseComponent newComponent) {
             // SWITCH COMPONENT KEYS
 
             switch (key) {
@@ -155,7 +160,8 @@ public class ConnectionController {
     };
 
     // COMPONENT LISTENER
-    private DJIBaseComponent.DJIComponentListener mDJIComponentListener = new DJIBaseComponent.DJIComponentListener() {
+    private DJIBaseComponent.DJIComponentListener mDJIComponentListener =
+            new DJIBaseComponent.DJIComponentListener() {
         @Override public void onComponentConnectivityChanged(boolean isConnected) {
             notifyStatusChange();
         }
