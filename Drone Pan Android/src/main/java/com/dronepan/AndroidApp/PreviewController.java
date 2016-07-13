@@ -28,10 +28,9 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
         // RECEIVED VIDEO DATA CALLBACK
         mReceivedVideoDataCallBack = new DJICamera.CameraReceivedVideoDataCallback() {
             @Override public void onResult(byte[] videoBuffer, int size) {
-                if(mCodecManager != null) {
+                if (mCodecManager != null) {
                     mCodecManager.sendDataToDecoder(videoBuffer, size);
-                }
-                else {
+                } else {
                     Timber.e("ERROR CREATING CODEC MANAGER");
                 }
             }
@@ -45,7 +44,7 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
     //  SURFACE TEXTURE EVENTS
     @Override public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         // CREATE CODEC ON SURFACE
-        if(mCodecManager == null) {
+        if (mCodecManager == null) {
             mCodecManager = new DJICodecManager(mainCtx, surface, width, height);
         }
     }
@@ -59,7 +58,7 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
     }
 
     @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        if(mCodecManager != null) {
+        if (mCodecManager != null) {
             mCodecManager.cleanSurface();
             mCodecManager = null;
         }
@@ -74,7 +73,7 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
 
     // SET VIDEO SURFACE
     public void initializeVideoCallback() {
-        if (mCurrentCamera != null){
+        if (mCurrentCamera != null) {
             // SET DJI CAMERA VIDEO DATA CALLBACK
             mCurrentCamera.setDJICameraReceivedVideoDataCallback(mReceivedVideoDataCallBack);
         }
@@ -82,7 +81,7 @@ public class PreviewController implements TextureView.SurfaceTextureListener {
 
     // UNSET VIDEO SURFACE
     public void removeVideoCallback() {
-        if (mCurrentCamera != null){
+        if (mCurrentCamera != null) {
             // SET DJI CAMERA VIDEO DATA CALLBACK
             mCurrentCamera.setDJICameraReceivedVideoDataCallback(null);
         }
