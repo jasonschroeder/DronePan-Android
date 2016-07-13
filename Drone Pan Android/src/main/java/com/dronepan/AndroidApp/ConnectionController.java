@@ -137,6 +137,9 @@ public class ConnectionController {
                     DJIFlightController fc = (DJIFlightController) newComponent;
                     delegate.connectedToFlightController(fc);
                     break;
+                default:
+                    // don't care about AirLink or HandheldController.
+                    break;
 
             }
             if (newComponent != null) {
