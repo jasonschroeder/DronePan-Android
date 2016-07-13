@@ -52,7 +52,6 @@ public class ConnectionController {
 
     public ConnectionControllerInterface delegate = null;
 
-
     public void start(MainViewController ctx) {
         mHandler = new Handler(Looper.getMainLooper());
 
