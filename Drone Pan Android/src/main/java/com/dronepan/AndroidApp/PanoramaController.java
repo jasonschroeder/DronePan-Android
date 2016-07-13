@@ -232,14 +232,13 @@ public class PanoramaController {
 
                 @Override
                 public void onResult(DJIError error) {
-                    if(error == null) {
+                    if (error == null) {
                         //delegate.postUserMessage("Mission executing OK");
                         Timber.i("Mission Execution finished without error.");
 
-                        if(curretMissions.isEmpty()) {
+                        if (curretMissions.isEmpty()) {
                             delegate.postUserMessage("PANORAMA CAPTURED OK");
-                        }
-                        else {
+                        } else {
                             // EXECUTE NEXT MISSION
                             executeNextMission();
                         }

@@ -39,18 +39,19 @@ public class CameraController {
     }
 
     public void swapEABMode() {
-        if(mAEBCaptureMode)
+        if (mAEBCaptureMode) {
             mAEBCaptureMode = false;
-        else
+        } else {
             mAEBCaptureMode = true;
+        }
 
         delegate.cameraModeSwapAEB(mAEBCaptureMode);
     }
 
     public void takePicture() {
-        if(mCamera != null) {
+        if (mCamera != null) {
             DJICameraSettingsDef.CameraShootPhotoMode shootMode = DJICameraSettingsDef.CameraShootPhotoMode.Single;
-            if(mAEBCaptureMode) {
+            if (mAEBCaptureMode) {
                 shootMode = DJICameraSettingsDef.CameraShootPhotoMode.AEBCapture;
             }
             mCamera.startShootPhoto(
@@ -58,8 +59,9 @@ public class CameraController {
                     new DJIBaseComponent.DJICompletionCallback() {
                         @Override
                         public void onResult(DJIError djiError) {
-                            if (null == djiError)
+                            if (null == djiError) {
                                 delegate.cameraTakePictureSuccess();
+                            }
                         }
                     }
             ); // Execute the startShootPhoto API`

@@ -98,7 +98,7 @@ public class MainViewController extends Activity implements View.OnClickListener
         public void onReceive(Context context, Intent intent) {
             Timber.d("BROADCAST RECEIVED");
             /*DJIBaseProduct product = connectionController.;
-            if(product != null && product.getModel() != null) {
+            if (product != null && product.getModel() != null) {
                 showToast("CONNECTED TO ");
             }*/
 
@@ -112,7 +112,7 @@ public class MainViewController extends Activity implements View.OnClickListener
         mConnectStatusTextView = (TextView) findViewById(R.id.ConnectStatusTextView);
 
         // VIDEO SURFACE
-        mVideoSurface = (TextureView)findViewById(R.id.video_previewer_surface);
+        mVideoSurface = (TextureView) findViewById(R.id.video_previewer_surface);
 
         // START PANORAMA BUTTON
         mStartPanorama = (Button) findViewById(R.id.btn_startpanorama);
@@ -190,7 +190,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void connectedToProduct(DJIBaseProduct product) {
-        if(product != null && product.getModel() != null) {
+        if (product != null && product.getModel() != null) {
             showToast("CONNECTED TO " + product.getModel().toString());
             mProduct = product;
 
@@ -219,7 +219,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void connectedToCamera(DJICamera camera) {
-        if(camera != null) {
+        if (camera != null) {
             showToast("CONNECTED TO CAMERA");
 
             // INIT CAMERA CONTROLLER
@@ -229,8 +229,7 @@ public class MainViewController extends Activity implements View.OnClickListener
 
             // SET PREVIEW CONTROLLER CAMERA
             previewController.setCurrentCamera(camera);
-        }
-        else {
+        } else {
             cameraController = null;
         }
     }
@@ -249,7 +248,7 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     public void connectedToFlightController(@NonNull DJIFlightController fc) {
         Timber.i("connected to FlightController (%s)", fc.isConnected());
-        if(flightController == null) {
+        if (flightController == null) {
             flightController = new FlightController();
             flightController.init(fc);
         }
@@ -347,10 +346,9 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void cameraModeSwapAEB(boolean aebCapture) {
-        if(aebCapture == true) {
+        if (aebCapture == true) {
             showToast("AEB MODE TURNED ON");
-        }
-        else {
+        } else {
             showToast("AEB MODE TURNED OFF");
         }
     }
@@ -370,20 +368,16 @@ public class MainViewController extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_startpanorama:{
+            case R.id.btn_startpanorama:
                 startPanorama();
                 break;
-            }
 
-            case R.id.btn_cancelmission:{
-
+            case R.id.btn_cancelmission:
                 break;
-            }
 
-            case R.id.btn_settings:{
+            case R.id.btn_settings:
                 cameraController.swapEABMode();
                 break;
-            }
 
             default:
                 break;
