@@ -1,1 +1,1 @@
-include ':Drone Pan Android', ':dJISDKLIB'
+include ':Drone Pan Android'
