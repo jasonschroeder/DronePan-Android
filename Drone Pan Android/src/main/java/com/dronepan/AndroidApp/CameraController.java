@@ -50,7 +50,8 @@ public class CameraController {
 
     public void takePicture() {
         if (mCamera != null) {
-            DJICameraSettingsDef.CameraShootPhotoMode shootMode = DJICameraSettingsDef.CameraShootPhotoMode.Single;
+            DJICameraSettingsDef.CameraShootPhotoMode shootMode =
+                    DJICameraSettingsDef.CameraShootPhotoMode.Single;
             if (mAEBCaptureMode) {
                 shootMode = DJICameraSettingsDef.CameraShootPhotoMode.AEBCapture;
             }

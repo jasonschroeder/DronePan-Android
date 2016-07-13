@@ -22,7 +22,8 @@ public class BatteryController {
                 new DJIBattery.DJIBatteryStateUpdateCallback() {
                     @Override
                     public void onResult(DJIBattery.DJIBatteryState djiBatteryState) {
-                        delegate.batteryControllerPercentUpdated(djiBatteryState.getBatteryEnergyRemainingPercent());
+                        delegate.batteryControllerPercentUpdated(
+                                djiBatteryState.getBatteryEnergyRemainingPercent());
                     }
                 }
             );
