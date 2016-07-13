@@ -9,7 +9,6 @@ import dji.sdk.MissionManager.DJIMission;
 import dji.sdk.MissionManager.DJIMissionManager;
 import dji.sdk.MissionManager.MissionStep.DJIGimbalAttitudeStep;
 import dji.sdk.MissionManager.MissionStep.DJIMissionStep;
-import dji.sdk.MissionManager.MissionStep.DJIShootPhotoStep;
 import dji.sdk.MissionManager.MissionStep.DJIAircraftYawStep;
 import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIError;
