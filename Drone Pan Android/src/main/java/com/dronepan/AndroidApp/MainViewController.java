@@ -1,14 +1,15 @@
 package com.dronepan.AndroidApp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
-import android.graphics.SurfaceTexture;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.os.Bundle;
 import android.view.TextureView;
@@ -17,7 +18,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.CompoundButton;
 
 import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
@@ -46,9 +46,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     public TextView mConnectStatusTextView;
     protected TextureView mVideoSurface = null;
 
-    public TextView recordingTime;
-    public Button mCaptureButton, mShootPhotoModeButton, mRecordVideoModeButton;
-    public ToggleButton mRecordButton;
+    public Button mStartPanorama;
 
     private Handler mHandler;
 
@@ -81,16 +79,24 @@ public class MainViewController extends Activity implements View.OnClickListener
         panoramaController = new PanoramaController(this);
         panoramaController.delegate = this;
 
+
         // RECEIVE DEVICE CONNECTION CHANGES
         IntentFilter filter = new IntentFilter();
         filter.addAction(FLAG_CONNECTION_CHANGE);
         registerReceiver(mReceiver, filter);
+
     }
 
     protected BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "BORADCASST RECEIVED");
+            //Log.d(TAG, "BORADCASST RECEIVED");
+            /*DJIBaseProduct product = connectionController.;
+            if(product != null && product.getModel() != null) {
+                showToast("CONNECTED TO ");
+            }*/
+
+            showToast("CONNECTION CHANGED");
 
         }
 
@@ -103,11 +109,9 @@ public class MainViewController extends Activity implements View.OnClickListener
         // VIDEO SURFACE
         mVideoSurface = (TextureView)findViewById(R.id.video_previewer_surface);
 
-        recordingTime = (TextView) findViewById(R.id.timer);
-        mCaptureButton = (Button) findViewById(R.id.btn_capture);
-
-        mCaptureButton.setOnClickListener(this);
-        recordingTime.setVisibility(View.INVISIBLE);
+        // START PANORAMA BUTTON
+        mStartPanorama = (Button) findViewById(R.id.btn_startpanorama);
+        mStartPanorama.setOnClickListener(this);
     }
 
     public void setTitleBar(String text) {
@@ -179,7 +183,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     //
     public void sdkRegistered() {
         Log.d(TAG, "SDK REGISTERED");
-
+        showToast("SDK REGISTERED");
     }
 
     public void failedToRegister(String reason) {
@@ -187,12 +191,13 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void connectedToProduct(DJIBaseProduct product) {
-        showToast("Connected to "+product.getModel().toString());
-
+        if(product != null && product.getModel() != null) {
+            showToast("CONNECTED TO " + product.getModel().toString());
+        }
     }
 
     public void disconnected() {
-
+        showToast("DISCONNECTED!");
     }
 
     public void connectedToBattery(DJIBattery battery) {
@@ -314,8 +319,18 @@ public class MainViewController extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_capture:{
+            case R.id.btn_startpanorama:{
                 startPanorama();
+                break;
+            }
+
+            case R.id.btn_cancelmission:{
+
+                break;
+            }
+
+            case R.id.btn_settings:{
+
                 break;
             }
 

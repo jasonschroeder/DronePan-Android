@@ -36,9 +36,9 @@
 
     <TextureView
         android:id="@+id/video_previewer_surface"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_height="405px"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true" />
 
@@ -60,15 +60,5 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/timer"
-        android:layout_width="150dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:textColor="#ffffff"
-        android:layout_below="@+id/video_previewer_surface"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

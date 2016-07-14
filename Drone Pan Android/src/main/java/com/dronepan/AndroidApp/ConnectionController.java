@@ -1,7 +1,10 @@
 package com.dronepan.AndroidApp;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -22,6 +25,10 @@ public class ConnectionController {
 
     private static DJIBaseProduct mProduct;
     protected String model = "";
+
+    private Handler mHandler;
+
+    private MainViewController viewController = null;
 
     public enum ProductType {
         Aircraft,
@@ -54,6 +61,7 @@ public class ConnectionController {
     }
 
     public void start(MainViewController ctx) {
+        mHandler = new Handler(Looper.getMainLooper());
 
         Log.d(TAG, "STARTING SDK MANAGER");
         // INIT DJI SDK MANAGER
@@ -74,7 +82,8 @@ public class ConnectionController {
                     @Override
                     public void run() {
                         Log.d(TAG, "SUCCESS REGISTRATION SDK");
-                        //PanoramaController.getInstance().showLog("SUCCESS REGISTRATION SDK");
+                        delegate.sdkRegistered();
+
                     }
                 });
             }
@@ -84,7 +93,7 @@ public class ConnectionController {
                     @Override
                     public void run() {
                         Log.d("DronePan", "ERROR REGISTRATION SDK");
-                        //PanoramaController.getInstance().showLog("ERROR REGISTERING SDK");
+
                     }
                 });
             }
@@ -98,10 +107,7 @@ public class ConnectionController {
                 mProduct.setDJIBaseProductListener(mDJIBaseProductListener);
 
                 // CALLS INTERFACE CALLBACK
-                if(delegate != null) {
-                    delegate.connectedToProduct(mProduct);
-                }
-
+                delegate.connectedToProduct(mProduct);
             }
         }
     };
@@ -142,6 +148,7 @@ public class ConnectionController {
             if(newComponent != null) {
                 newComponent.setDJIComponentListener(mDJIComponentListener);
             }
+
             //notifyStatusChange();
         }
 
@@ -156,4 +163,9 @@ public class ConnectionController {
             //notifyStatusChange();
         }
     };
+
+    private void notifyStatusChange() {
+
+    }
+
 }
