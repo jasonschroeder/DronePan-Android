@@ -1,7 +1,6 @@
 package com.dronepan.AndroidApp;
 
-import android.util.Log;
-
+import android.os.Handler;
 import java.util.LinkedList;
 
 import dji.sdk.Gimbal.DJIGimbal;
@@ -32,6 +31,7 @@ public class PanoramaController {
         void aircraftAltitudeChanged(float altitude);
         void panoCountChanged(int count, int total);
         void panoAvailable(boolean available);
+        void takePicture();
 
     }
 
@@ -48,8 +48,14 @@ public class PanoramaController {
     private float lastGimbalRoll = 0.0f;
     private float lastACYaw = 0.0f;
 
+    private Handler mHandler = new Handler();
+
     private boolean isRunningState = false;
     private boolean isRunningOK = false;
+
+    private float currentGimbalRotation = 0f;
+
+    private LinkedList<DJIMission> curretMissions = null;
 
     public PanoramaController(MainViewController ctx) {
         mContext = ctx;
@@ -96,9 +102,7 @@ public class PanoramaController {
 
     // DO PANO LOOP
     protected void doPanoLoop() {
-        int currentCount = 0;
-
-        delegate.postUserMessage("doPanoLoop");
+        /*int currentCount = 0;
 
         DJIMissionManager missionManager = DJIMissionManager.getInstance();
 
@@ -112,6 +116,7 @@ public class PanoramaController {
             delegate.postUserMessage("Please choose a mission type");
             //Utils.setResultToToast(mContext, "Please choose a mission type...");
         }
+
         missionManager.prepareMission(mDJIMission, new DJIMission.DJIMissionProgressHandler() {
 
             @Override
@@ -134,11 +139,93 @@ public class PanoramaController {
                     delegate.postUserMessage("Error preparing mission " + error.getDescription());
                 }
             }
+        });*/
+
+        delegate.postUserMessage("STARTING PANORAMA");
+
+       curretMissions = new LinkedList<DJIMission>();
+
+        createColumnMission();
+        createColumnMission();
+        createColumnMission();
+        createColumnMission();
+        createColumnMission();
+        createColumnMission();
+
+        // LAST DOWN SHOT
+        currentGimbalRotation = -90;
+        curretMissions.add(createGimbalMission());
+
+        executeNextMission();
+    }
+
+    protected void createColumnMission() {
+        currentGimbalRotation = 0;
+        curretMissions.add(createGimbalMission());
+        currentGimbalRotation -= 30;
+        curretMissions.add(createGimbalMission());
+        currentGimbalRotation -= 30;
+        curretMissions.add(createGimbalMission());
+
+        curretMissions.add(createYawMission());
+
+    }
+
+    protected void executeNextMission() {
+
+            mHandler.postDelayed(new Runnable() {
+                public void run() {
+                    if (!curretMissions.isEmpty()) {
+                        DJIMission nextMission = curretMissions.pop();
+                        executeMission(nextMission);
+                    }
+                }
+            }, 5000);
+
+
+    }
+
+    protected void executeMission(DJIMission mission) {
+        int currentCount = 0;
+
+        DJIMissionManager missionManager = DJIMissionManager.getInstance();
+
+        if (missionManager == null) {
+            delegate.postUserMessage("Error: Could not get mission manager instance");
+            return;
+        }
+
+        mDJIMission = mission;
+        if (mDJIMission == null) {
+            delegate.postUserMessage("Please choose a mission type");
+            //Utils.setResultToToast(mContext, "Please choose a mission type...");
+        }
+
+        missionManager.prepareMission(mDJIMission, new DJIMission.DJIMissionProgressHandler() {
+
+            @Override
+            public void onProgress(DJIMission.DJIProgressType type, float progress) {
+                //setProgressBar((int)(progress * 100f));
+            }
+
+        }, new DJIBaseComponent.DJICompletionCallback() {
+
+
+            @Override
+            public void onResult(DJIError error) {
+                if (error == null) {
+                    //delegate.postUserMessage("PREPARING MISSION SUCCESS!");
+
+                    startMission();
+                } else {
+                    delegate.postUserMessage("ERROR PREPARING MISSION " + error.getDescription());
+                }
+            }
         });
     }
 
     protected void startMission() {
-        delegate.postUserMessage("Starting mission");
+        //delegate.postUserMessage("STARTING MISSION");
 
         DJIMissionManager missionManager = DJIMissionManager.getInstance();
 
@@ -149,19 +236,31 @@ public class PanoramaController {
                 public void onResult(DJIError error) {
 
                     if(error == null) {
-                        delegate.postUserMessage("Mission executing OK");
+                        //delegate.postUserMessage("Mission executing OK");
+
+                        if(curretMissions.isEmpty()) {
+                            delegate.postUserMessage("PANORAMA CAPTURED OK");
+                        }
+                        else {
+                            // EXECUTE NEXT MISSION
+                            executeNextMission();
+                        }
                     }
 
                 }
             });
 
-            missionManager.startMissionExecution(new DJIBaseComponent.DJICompletionCallback() {
+            missionManager.startMissionExecution(new DJIBaseComponent.DJICompletionCallback()
+
+            {
 
                 @Override
                 public void onResult(DJIError mError) {
 
                     if (mError == null) {
-                        delegate.postUserMessage("Mission execution sucess");
+
+                        //delegate.postUserMessage("SUCCESS EXECUTING MISSION");
+
                     } else {
                         delegate.postUserMessage("Error mission execution: " + mError.getDescription());
                     }
@@ -170,7 +269,49 @@ public class PanoramaController {
         }
     }
 
-    protected DJICustomMission createCustomMission() {
+    protected DJICustomMission createGimbalMission() {
+        LinkedList<DJIMissionStep> steps = new LinkedList<DJIMissionStep>();
+
+        // RESET GIMBAL STATE
+        steps.add(new DJIGimbalAttitudeStep(
+                DJIGimbal.DJIGimbalRotateAngleMode.AbsoluteAngle,
+                new DJIGimbal.DJIGimbalAngleRotation(true, currentGimbalRotation, DJIGimbal.DJIGimbalRotateDirection.Clockwise),
+                null,
+                null,
+                new DJIBaseComponent.DJICompletionCallback() {
+                    @Override
+                    public void onResult(DJIError error) {
+                        if (error != null) {
+                            delegate.postUserMessage("RESET GIMBAL ERROR: " + error.getDescription());
+                        } else {
+
+                            // TAKE PICTURE
+                            delegate.takePicture();
+                        }
+                        //delegate.postUserMessage("RESET GIMBAL: " + DJIGimbal.DJIGimbalRotateDirection.Clockwise + " " + (error == null ? "Success" : error.getDescription()));
+                    }
+
+                }));
+
+        DJICustomMission customMission = new DJICustomMission(steps);
+        return customMission;
+    }
+
+    protected DJICustomMission createYawMission() {
+        LinkedList<DJIMissionStep> steps = new LinkedList<DJIMissionStep>();
+
+        steps.add(new DJIAircraftYawStep(60.0f, 18.0f, new DJIBaseComponent.DJICompletionCallback() {
+            @Override
+            public void onResult(DJIError error) {
+                //delegate.postUserMessage("AIRCRAFT YAW STEP");
+            }
+        }));
+
+        DJICustomMission customMission = new DJICustomMission(steps);
+        return customMission;
+    }
+
+    /*protected DJICustomMission createCustomMission1() {
         // CREATE STEP LIST
         LinkedList<DJIMissionStep> steps = new LinkedList<DJIMissionStep>();
 
@@ -305,7 +446,7 @@ public class PanoramaController {
 
     public void buildMissionSteps() {
 
-    }
+    }*/
 
     public boolean checkProduct() {
 

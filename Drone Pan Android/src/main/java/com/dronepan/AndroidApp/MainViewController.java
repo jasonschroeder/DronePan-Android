@@ -21,17 +21,20 @@ import android.widget.ToggleButton;
 
 import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
+import dji.sdk.Camera.DJICameraSettingsDef;
 import dji.sdk.FlightController.DJIFlightController;
 import dji.sdk.Gimbal.DJIGimbal;
 import dji.sdk.RemoteController.DJIRemoteController;
+import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIBaseProduct;
+import dji.sdk.base.DJIError;
 
-public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface, CameraController.CameraControllerInterface {
+public class MainViewController extends Activity implements View.OnClickListener, ConnectionController.ConnectionControllerInterface, PanoramaController.PanoramaControllerInterface, CameraController.CameraControllerInterface, BatteryController.BatteryControllerInterface {
     private static final String TAG = MainViewController.class.getName();
 
     public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
 
-    private DJIBaseProduct product;
+    private DJIBaseProduct mProduct;
     private ConnectionController connectionController = null;
     private PreviewController previewController = null;
     private BatteryController batteryController = null;
@@ -43,10 +46,12 @@ public class MainViewController extends Activity implements View.OnClickListener
 
     public static String DRONEPAN_ANDROID_VERSION = "0.1";
 
+
     public TextView mConnectStatusTextView;
     protected TextureView mVideoSurface = null;
 
     public Button mStartPanorama;
+    public Button mSwapAEBMode;
 
     private Handler mHandler;
 
@@ -74,6 +79,10 @@ public class MainViewController extends Activity implements View.OnClickListener
         previewController = new PreviewController();
         // START WITH VIDEO SURFACE
         previewController.startWithContextSurface(this, mVideoSurface);
+
+        // BATTERY CONTROLLER
+        batteryController = new BatteryController();
+        batteryController.delegate = this;
 
         // PANORAMA CONTROLLER
         panoramaController = new PanoramaController(this);
@@ -112,6 +121,10 @@ public class MainViewController extends Activity implements View.OnClickListener
         // START PANORAMA BUTTON
         mStartPanorama = (Button) findViewById(R.id.btn_startpanorama);
         mStartPanorama.setOnClickListener(this);
+
+        // START PANORAMA BUTTON
+        mSwapAEBMode = (Button) findViewById(R.id.btn_settings);
+        mSwapAEBMode.setOnClickListener(this);
     }
 
     public void setTitleBar(String text) {
@@ -193,6 +206,18 @@ public class MainViewController extends Activity implements View.OnClickListener
     public void connectedToProduct(DJIBaseProduct product) {
         if(product != null && product.getModel() != null) {
             showToast("CONNECTED TO " + product.getModel().toString());
+            mProduct = product;
+
+            // SET CAMERA TO PHOTO MODE
+            mProduct.getCamera().setCameraMode(
+                    DJICameraSettingsDef.CameraMode.ShootPhoto,
+                    new DJIBaseComponent.DJICompletionCallback() {
+                        @Override
+                        public void onResult(DJIError djiError) {
+
+                        }
+                    }
+            );
         }
     }
 
@@ -201,11 +226,14 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void connectedToBattery(DJIBattery battery) {
-
+        showToast("CONNECTED TO BATTERY");
+        batteryController.init(battery);
     }
 
     public void connectedToCamera(DJICamera camera) {
         if(camera != null) {
+            showToast("CONNECTED TO CAMERA");
+
             // INIT CAMERA CONTROLLER
             cameraController = new CameraController();
             cameraController.init(camera);
@@ -257,6 +285,14 @@ public class MainViewController extends Activity implements View.OnClickListener
     //
     //  PANORAMA CONTROLLER INTERFACE
     //
+    @Override
+    public void takePicture() {
+        cameraController.takePicture();
+
+
+
+    }
+
     public void postUserMessage(String message) {
         showToast(message);
     }
@@ -302,8 +338,30 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     //
+    // BATTERY CONTROLLER INTERFACE
+    //
+    @Override
+    public void batteryControllerPercentUpdated(int batteryPercent) {
+        TextView batteryText = (TextView) findViewById(R.id.txt_battery);
+        batteryText.setText("Battery : " + batteryPercent + "% |");
+    }
+
+    //
     //  CAMERA CONTROLLER INTERFACE
     //
+    public void cameraTakePictureSuccess() {
+        showToast("CAPTURED PHOTO");
+    }
+
+    public void cameraModeSwapAEB(boolean aebCapture) {
+        if(aebCapture == true) {
+            showToast("AEB MODE TURNED ON");
+        }
+        else {
+            showToast("AEB MODE TURNED OFF");
+        }
+    }
+
     public void cameraControllerInError(String reason) {
 
     }
@@ -330,7 +388,7 @@ public class MainViewController extends Activity implements View.OnClickListener
             }
 
             case R.id.btn_settings:{
-
+                cameraController.swapEABMode();
                 break;
             }
 
@@ -351,5 +409,6 @@ public class MainViewController extends Activity implements View.OnClickListener
             //PanoramaController.getInstance().getMainContext().sendBroadcast(intent);
         }
     };
+
 
 }

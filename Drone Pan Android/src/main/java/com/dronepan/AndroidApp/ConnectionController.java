@@ -63,6 +63,8 @@ public class ConnectionController {
     public void start(MainViewController ctx) {
         mHandler = new Handler(Looper.getMainLooper());
 
+        viewController = ctx;
+
         Log.d(TAG, "STARTING SDK MANAGER");
         // INIT DJI SDK MANAGER
         DJISDKManager.getInstance().initSDKManager(ctx, mDJISDKMangerCallback);
@@ -108,6 +110,8 @@ public class ConnectionController {
 
                 // CALLS INTERFACE CALLBACK
                 delegate.connectedToProduct(mProduct);
+                delegate.connectedToBattery(mProduct.getBattery());
+                delegate.connectedToCamera(mProduct.getCamera());
             }
         }
     };
@@ -118,11 +122,6 @@ public class ConnectionController {
             // SWITCH COMPONENT KEYS
 
             switch (key) {
-                case Battery:
-                    // CALLS INTERFACE CALLBACK
-                    DJIBattery battery = (DJIBattery)newComponent;
-                    delegate.connectedToBattery(battery);
-                    break;
                 case Camera:
                     // CALLS INTERFACE CALLBACK
                         DJICamera camera = (DJICamera)newComponent;
@@ -149,23 +148,32 @@ public class ConnectionController {
                 newComponent.setDJIComponentListener(mDJIComponentListener);
             }
 
-            //notifyStatusChange();
+            notifyStatusChange();
         }
 
         @Override public void onProductConnectivityChanged(boolean isConnected) {
-            //notifyStatusChange();
+            notifyStatusChange();
         }
     };
 
     // COMPONENT LISTENER
     private DJIBaseComponent.DJIComponentListener mDJIComponentListener = new DJIBaseComponent.DJIComponentListener() {
         @Override public void onComponentConnectivityChanged(boolean isConnected) {
-            //notifyStatusChange();
+            notifyStatusChange();
         }
     };
 
     private void notifyStatusChange() {
-
+        mHandler.removeCallbacks(updateRunnable);
+        mHandler.postDelayed(updateRunnable, 500);
     }
 
+    private Runnable updateRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            Intent intent = new Intent(MainViewController.FLAG_CONNECTION_CHANGE);
+            viewController.sendBroadcast(intent);
+        }
+    };
 }
