@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
@@ -19,9 +18,9 @@ import dji.sdk.base.DJIBaseComponent;
 import dji.sdk.base.DJIBaseProduct;
 import dji.sdk.base.DJIError;
 import dji.sdk.base.DJISDKError;
+import timber.log.Timber;
 
 public class ConnectionController {
-    private static final String TAG = ConnectionController.class.getName();
 
     private static DJIBaseProduct mProduct;
     protected String model = "";
@@ -38,34 +37,31 @@ public class ConnectionController {
 
     // INTERFACE METHODS
     interface ConnectionControllerInterface {
-        public void sdkRegistered();
-        public void failedToRegister(String reason);
-        public void connectedToProduct(DJIBaseProduct product);
-        public void disconnected();
-        public void connectedToBattery(DJIBattery battery);
-        public void connectedToCamera(DJICamera camera);
-        public void connectedToGimbal(DJIGimbal gimbal);
-        public void connectedToRemoteController(DJIRemoteController rc);
-        public void connectedToFlightController(DJIFlightController flightController);
-        public void disconnectedFromBattery();
-        public void disconnectedFromCamera();
-        public void disconnectedFromGimbal();
-        public void disconnectedFromRemote();
-        public void disconnectedFromFlightController();
+        void sdkRegistered();
+        void failedToRegister(String reason);
+        void connectedToProduct(DJIBaseProduct product);
+        void disconnected();
+        void connectedToBattery(DJIBattery battery);
+        void connectedToCamera(DJICamera camera);
+        void connectedToGimbal(DJIGimbal gimbal);
+        void connectedToRemoteController(DJIRemoteController rc);
+        void connectedToFlightController(DJIFlightController flightController);
+        void disconnectedFromBattery();
+        void disconnectedFromCamera();
+        void disconnectedFromGimbal();
+        void disconnectedFromRemote();
+        void disconnectedFromFlightController();
     }
 
     public ConnectionControllerInterface delegate = null;
 
-    public void ConnectionController() {
-
-    }
 
     public void start(MainViewController ctx) {
         mHandler = new Handler(Looper.getMainLooper());
 
         viewController = ctx;
 
-        Log.d(TAG, "STARTING SDK MANAGER");
+        Timber.d("STARTING SDK MANAGER");
         // INIT DJI SDK MANAGER
         DJISDKManager.getInstance().initSDKManager(ctx, mDJISDKMangerCallback);
     }
@@ -73,7 +69,7 @@ public class ConnectionController {
     // DJI SDK MANAGER CALLBACK
     private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback = new DJISDKManager.DJISDKManagerCallback() {
         @Override public void onGetRegisteredResult(DJIError error) {
-            Log.d(TAG, "SDK Manger Registered Result  err: "+error.getDescription());
+            Timber.d("SDK Manger Registered Result  err:%s",error.getDescription());
 
             if(error == DJISDKError.REGISTRATION_SUCCESS) {
                 // START CONNECTION TO PRODUCT
@@ -83,7 +79,7 @@ public class ConnectionController {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(TAG, "SUCCESS REGISTRATION SDK");
+                        Timber.d("SUCCESS REGISTRATION SDK");
                         delegate.sdkRegistered();
 
                     }
@@ -94,8 +90,7 @@ public class ConnectionController {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("DronePan", "ERROR REGISTRATION SDK");
-
+                        Timber.d("ERROR REGISTRATION SDK");
                     }
                 });
             }
