@@ -343,7 +343,7 @@ public class MainViewController extends Activity implements View.OnClickListener
     }
 
     public void cameraModeSwapAEB(boolean aebCapture) {
-        if (aebCapture == true) {
+        if (aebCapture) {
             showToast("AEB MODE TURNED ON");
         } else {
             showToast("AEB MODE TURNED OFF");
