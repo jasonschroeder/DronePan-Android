@@ -4,6 +4,7 @@ package com.dronepan.AndroidApp;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
@@ -65,7 +66,7 @@ public class ConnectionController {
     // DJI SDK MANAGER CALLBACK
     private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback =
             new DJISDKManager.DJISDKManagerCallback() {
-        @Override public void onGetRegisteredResult(DJIError error) {
+        @Override public void onGetRegisteredResult(@NonNull final DJIError error) {
             Timber.d("SDK Manger Registered Result  err: %s", error.getDescription());
 
             if (error == DJISDKError.REGISTRATION_SUCCESS) {
@@ -86,6 +87,7 @@ public class ConnectionController {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+                        delegate.failedToRegister(error.getDescription());
                         Timber.d("ERROR REGISTRATION SDK");
                     }
                 });

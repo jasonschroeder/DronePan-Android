@@ -3,6 +3,8 @@ package com.dronepan.AndroidApp;
 import android.os.Handler;
 import java.util.LinkedList;
 
+import dji.midware.data.model.P3.DataCameraGetPushStateInfo;
+import dji.midware.data.model.P3.DataCameraGetStateInfo;
 import dji.sdk.Gimbal.DJIGimbal;
 import dji.sdk.MissionManager.DJICustomMission;
 import dji.sdk.MissionManager.DJIMission;
@@ -23,7 +25,7 @@ public class PanoramaController {
         void panoStopping();
         void gimbalAttitudeChanged(float pitch, float yaw, float roll);
         void aircraftYawChanged(float yaw);
-        void aircraftSattelitesChanged(int count);
+        void aircraftSatellitesChanged(int count);
         void aircraftDistanceChanged(float lat, float lng);
         void aircraftAltitudeChanged(float altitude);
         void panoCountChanged(int count, int total);
@@ -60,30 +62,37 @@ public class PanoramaController {
     public void start() {
         Timber.i("Starting Pano");
         if (!checkProduct()) {
+            Timber.e("pre-flight check failed. No product");
             return;
         }
 
         if (!checkCamera()) {
+            Timber.e("pre-flight check failed. No camera");
             return;
         }
 
         if (!checkSpace()) {
+            Timber.e("Not enough disk space for a panorama set. Abort");
             return;
         }
 
         if (!checkGimbal()) {
+            Timber.e("pre-flight check failed. No gimbal");
             return;
         }
 
         if (!checkFC()) {
+            Timber.e("pre-flight check failed. No FC");
             return;
         }
 
         if (!checkRemote()) {
+            Timber.e("pre-flight check failed. No remote");
             return;
         }
 
         if (!checkRCMode()) {
+            Timber.e("pre-flight check failed. No RC Mode");
             return;
         }
 
@@ -254,12 +263,10 @@ public class PanoramaController {
             missionManager.startMissionExecution(new DJIBaseComponent.DJICompletionCallback()
 
             {
-
                 @Override
                 public void onResult(DJIError mError) {
-
                     if (mError == null) {
-                        Timber.i("Mission execution success!");
+                        Timber.i("Mission started successfully.");
                         //delegate.postUserMessage("SUCCESS EXECUTING MISSION");
                     } else {
                         Timber.e("Error in mission execution: %s", mError.getDescription());
@@ -332,8 +339,16 @@ public class PanoramaController {
     }
 
     public boolean checkSpace() {
-
-        return true;
+        boolean hasSDcardInserted = DataCameraGetPushStateInfo.getInstance().getSDCardState()
+                == DataCameraGetStateInfo.SDCardState.Normal;
+        // estimate how much space is needed:
+        final int numPhotos = 19;
+        final int avgPhotoSize = 3; // 3mb
+        int freeSize = DataCameraGetPushStateInfo.getInstance().getSDCardFreeSize(); //Megabytes!
+        boolean freeSpace = freeSize > (numPhotos * avgPhotoSize);
+        Timber.i("Free space? sdcard:%s and %d > %d", hasSDcardInserted,
+                freeSize, numPhotos * avgPhotoSize);
+        return freeSpace;
     }
 
     public boolean checkGimbal() {

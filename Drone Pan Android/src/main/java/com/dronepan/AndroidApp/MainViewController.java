@@ -311,7 +311,7 @@ public class MainViewController extends Activity
 
     }
 
-    public void aircraftSattelitesChanged(int count) {
+    public void aircraftSatellitesChanged(int count) {
 
     }
 
