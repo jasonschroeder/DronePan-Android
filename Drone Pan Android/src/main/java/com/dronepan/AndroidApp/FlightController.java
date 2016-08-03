@@ -21,16 +21,19 @@ public class FlightController {
     public void init(DJIFlightController fc) {
         flightController = fc;
 
-        flightController.setUpdateSystemStateCallback(new DJIFlightControllerDelegate.FlightControllerUpdateSystemStateCallback() {
+        flightController.setUpdateSystemStateCallback(
+                new DJIFlightControllerDelegate.FlightControllerUpdateSystemStateCallback() {
 
             @Override
-            public void onResult(DJIFlightControllerDataType.DJIFlightControllerCurrentState state) {
+            public void onResult(
+                    DJIFlightControllerDataType.DJIFlightControllerCurrentState state) {
 
                 mHomeLatitude = state.getHomeLocation().getLatitude();
                 mHomeLongitude = state.getHomeLocation().getLongitude();
                 flightState = state.getFlightMode();
 
-                /*Utils.setResultToText(mContext, mFCPushInfoTV, "home point latitude: " + mHomeLatitude +
+                /*Utils.setResultToText(mContext, mFCPushInfoTV,
+                        "home point latitude: " + mHomeLatitude +
                         "\nhome point longitude: " + mHomeLongitude +
                         "\nFlight state: " + flightState.name());*/
 

@@ -1,12 +1,10 @@
 package com.dronepan.AndroidApp;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 
 import dji.sdk.Battery.DJIBattery;
 import dji.sdk.Camera.DJICamera;
@@ -55,7 +53,6 @@ public class ConnectionController {
 
     public ConnectionControllerInterface delegate = null;
 
-
     public void start(MainViewController ctx) {
         mHandler = new Handler(Looper.getMainLooper());
 
@@ -67,11 +64,12 @@ public class ConnectionController {
     }
 
     // DJI SDK MANAGER CALLBACK
-    private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback = new DJISDKManager.DJISDKManagerCallback() {
-        @Override public void onGetRegisteredResult(DJIError error) {
-            Timber.d("SDK Manger Registered Result  err:%s",error.getDescription());
+    private DJISDKManager.DJISDKManagerCallback mDJISDKMangerCallback =
+            new DJISDKManager.DJISDKManagerCallback() {
+        @Override public void onGetRegisteredResult(@NonNull final DJIError error) {
+            Timber.d("SDK Manger Registered Result  err: %s", error.getDescription());
 
-            if(error == DJISDKError.REGISTRATION_SUCCESS) {
+            if (error == DJISDKError.REGISTRATION_SUCCESS) {
                 // START CONNECTION TO PRODUCT
                 DJISDKManager.getInstance().startConnectionToProduct();
 
@@ -84,12 +82,12 @@ public class ConnectionController {
 
                     }
                 });
-            }
-            else {
+            } else {
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+                        delegate.failedToRegister(error.getDescription());
                         Timber.d("ERROR REGISTRATION SDK");
                     }
                 });
@@ -97,10 +95,11 @@ public class ConnectionController {
         }
 
         // ON PRODUCT CHANGED
-        @Override public void onProductChanged(DJIBaseProduct oldProduct, DJIBaseProduct newProduct) {
+        @Override public void onProductChanged(DJIBaseProduct oldProduct,
+                                               DJIBaseProduct newProduct) {
             mProduct = newProduct;
 
-            if(mProduct != null) {
+            if (mProduct != null) {
                 mProduct.setDJIBaseProductListener(mDJIBaseProductListener);
 
                 // CALLS INTERFACE CALLBACK
@@ -112,34 +111,45 @@ public class ConnectionController {
     };
 
     // PRODUCT LISTENER
-    private DJIBaseProduct.DJIBaseProductListener mDJIBaseProductListener = new DJIBaseProduct.DJIBaseProductListener() {
-        @Override public void onComponentChange(DJIBaseProduct.DJIComponentKey key, DJIBaseComponent oldComponent , DJIBaseComponent newComponent) {
+    private DJIBaseProduct.DJIBaseProductListener mDJIBaseProductListener =
+            new DJIBaseProduct.DJIBaseProductListener() {
+        @Override public void onComponentChange(DJIBaseProduct.DJIComponentKey key,
+                                                DJIBaseComponent oldComponent,
+                                                DJIBaseComponent newComponent) {
             // SWITCH COMPONENT KEYS
 
             switch (key) {
+                case Battery:
+                    // CALLS INTERFACE CALLBACK
+                    DJIBattery battery = (DJIBattery) newComponent;
+                    delegate.connectedToBattery(battery);
+                    break;
                 case Camera:
                     // CALLS INTERFACE CALLBACK
-                        DJICamera camera = (DJICamera)newComponent;
-                        delegate.connectedToCamera(camera);
+                    DJICamera camera = (DJICamera) newComponent;
+                    delegate.connectedToCamera(camera);
                     break;
                 case Gimbal:
                     // CALLS INTERFACE CALLBACK
-                    DJIGimbal gimbal = (DJIGimbal)newComponent;
+                    DJIGimbal gimbal = (DJIGimbal) newComponent;
                     delegate.connectedToGimbal(gimbal);
                     break;
                 case RemoteController:
                     // CALLS INTERFACE CALLBACK
-                    DJIRemoteController rc = (DJIRemoteController)newComponent;
+                    DJIRemoteController rc = (DJIRemoteController) newComponent;
                     delegate.connectedToRemoteController(rc);
                     break;
                 case FlightController:
                     // CALLS INTERFACE CALLBACK
-                    DJIFlightController fc = (DJIFlightController)newComponent;
+                    DJIFlightController fc = (DJIFlightController) newComponent;
                     delegate.connectedToFlightController(fc);
+                    break;
+                default:
+                    // don't care about AirLink or HandheldController.
                     break;
 
             }
-            if(newComponent != null) {
+            if (newComponent != null) {
                 newComponent.setDJIComponentListener(mDJIComponentListener);
             }
 
@@ -152,7 +162,8 @@ public class ConnectionController {
     };
 
     // COMPONENT LISTENER
-    private DJIBaseComponent.DJIComponentListener mDJIComponentListener = new DJIBaseComponent.DJIComponentListener() {
+    private DJIBaseComponent.DJIComponentListener mDJIComponentListener =
+            new DJIBaseComponent.DJIComponentListener() {
         @Override public void onComponentConnectivityChanged(boolean isConnected) {
             notifyStatusChange();
         }

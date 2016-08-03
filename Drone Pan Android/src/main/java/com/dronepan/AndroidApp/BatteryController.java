@@ -2,6 +2,7 @@ package com.dronepan.AndroidApp;
 
 
 import dji.sdk.Battery.DJIBattery;
+import timber.log.Timber;
 
 public class BatteryController {
 
@@ -21,12 +22,13 @@ public class BatteryController {
                 new DJIBattery.DJIBatteryStateUpdateCallback() {
                     @Override
                     public void onResult(DJIBattery.DJIBatteryState djiBatteryState) {
-                        delegate.batteryControllerPercentUpdated(djiBatteryState.getBatteryEnergyRemainingPercent());
+                        delegate.batteryControllerPercentUpdated(
+                                djiBatteryState.getBatteryEnergyRemainingPercent());
                     }
                 }
             );
         } catch (Exception exception) {
-
+            Timber.e(exception, "Couldn't set battery state callback");
         }
     }
 
